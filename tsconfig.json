@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "es2017",
+      "esnext"
+    ],
+    "listEmittedFiles": true,
+    "strict": true,
+    "allowSyntheticDefaultImports": true, // no errors with commonjs modules interop
+    "esModuleInterop": true, // enable to do "import React ..." instead of "import * as React ..."
+    "declaration": true, // don't emit declarations
+    "emitDecoratorMetadata": true, // include only if using decorators
+    "experimentalDecorators": true, // include only if using decorators
+    "importHelpers": true, // importing transpilation helpers from tslib
+    "resolveJsonModule": true,
+    "traceResolution": true,
+    "listFiles": true,
+    "diagnostics": true,
+    "noEmit": false,
+    "module": "commonjs",
+    "target": "es2017",
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "sourceMap": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./typings"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
