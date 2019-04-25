@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Types testType<Class<Vod>>() (type) should match snapshot 1`] = `"Class<Vod>"`;
+
+exports[`Types testType<Entity<Vod>>() (type) should match snapshot 1`] = `"Entity<Vod>"`;
+
+exports[`Types testType<Entity<Vod>>() (type) should match snapshot 2`] = `"Entity<Vod>"`;
+
+exports[`Types testType<ReturnType<Required<Vod['links']>['supplier']>>() (type) should match snapshot 1`] = `"{ self: string; }"`;
+
+exports[`Types testType<Vod>() (type) should match snapshot 1`] = `"Vod"`;
+
+exports[`Types testType<Vod['links']>() (type) should match snapshot 1`] = `"AttributeField<Vod, { self: string; }>"`;
+
+exports[`Types testType<Vod['links']>() (type) should match snapshot 2`] = `"AttributeField<Vod, { self: string; }>"`;
+
+exports[`Types testType<Vod['sources']>() (type) should match snapshot 1`] = `"OneToManyField<Vod, Source, any>"`;
+
+exports[`Types testType<Vod['title']>() (type) should match snapshot 1`] = `"AttributeField<Vod, string>"`;
+
+exports[`Types testType<typeof vodClass>() (type) should match snapshot 1`] = `"Class<Vod>"`;
+
+exports[`Types testType<typeof vodClass>>() (type) should match snapshot 1`] = `"Class<Vod>"`;

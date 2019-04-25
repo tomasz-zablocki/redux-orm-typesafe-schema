@@ -4,31 +4,50 @@
       "es2017",
       "esnext"
     ],
-    "listEmittedFiles": true,
+    "listFiles": false,
+    "listEmittedFiles": false,
+    "traceResolution": false,
+    "diagnostics": false,
     "strict": true,
-    "allowSyntheticDefaultImports": true, // no errors with commonjs modules interop
-    "esModuleInterop": true, // enable to do "import React ..." instead of "import * as React ..."
-    "declaration": true, // don't emit declarations
-    "emitDecoratorMetadata": true, // include only if using decorators
-    "experimentalDecorators": true, // include only if using decorators
-    "importHelpers": true, // importing transpilation helpers from tslib
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "pretty": true,
+    "removeComments": true,
+    "stripInternal": true,
+    "declaration": true,
+    "importHelpers": true,
     "resolveJsonModule": true,
-    "traceResolution": true,
-    "listFiles": true,
-    "diagnostics": true,
     "noEmit": false,
+    "target": "es5",
     "module": "commonjs",
-    "target": "es2017",
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "outDir": "./dist",
+    "allowUnreachableCode": false,
+    "outDir": "lib",
     "sourceMap": true,
     "typeRoots": [
       "./node_modules/@types",
       "./typings"
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@spec/*": [
+        "./src/spec/*"
+      ]
+    },
+    "rootDir": "src"
   },
+  "typedocOptions": {
+    "mode": "modules",
+    "out": "docs"
+  },
+  "types": [
+    "jest"
+  ],
   "include": [
     "src/**/*"
+  ],
+  "exclude": [
+    "src/**/*.snap.ts"
   ]
 }

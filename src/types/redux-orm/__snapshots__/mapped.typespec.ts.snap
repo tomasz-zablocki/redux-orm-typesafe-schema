@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`redux-orm mapped types Ref<Source> entries (type) should match snapshot 1`] = `"{ type: \\"MOVIE\\" | \\"PREVIEW\\" | \\"POSTER\\"; } | { vod: string; }"`;
+
+exports[`redux-orm mapped types Ref<Vod> entries (type) should match snapshot 1`] = `"{ id: string; } | { title: string; } | { links: { self: string; }; }"`;
+
+exports[`redux-orm mapped types testType<ModelRelationField<Source, 'vod'>>() (type) should match snapshot 1`] = `"Model<Vod>"`;
+
+exports[`redux-orm mapped types testType<ModelRelationField<Vod, 'contents'>>() (type) should match snapshot 1`] = `"MutableQuerySet<import(\\"src/spec/schema.fixture\\").Content>"`;
+
+exports[`redux-orm mapped types testType<ModelRelationField<Vod, 'sources'>>() (type) should match snapshot 1`] = `"QuerySet<Source>"`;
+
+exports[`redux-orm mapped types testType<ModelRelationField<Vod, 'vodId'>>() (type) should match snapshot 1`] = `"Model<import(\\"src/spec/schema.fixture\\").VodId>"`;

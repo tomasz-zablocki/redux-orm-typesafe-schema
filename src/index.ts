@@ -1,18 +1,10 @@
-import MyPartial from "./partial-class";
-
-
-
-for (let i in MyPartial) {
-  console.log('static',i)
-}
-
-for (let i in MyPartial.prototype) {
-  console.log('proto', i)
-}
-
-const obj = new MyPartial({text:'text'})
-
-
-type modelType= typeof MyPartial
-type instanceType = InstanceType<modelType>
-
+export { wireSchema } from './wire-schema'
+export { Entity, EntitySchema } from './types/schema'
+export {
+  Model,
+  QuerySet,
+  MutableQuerySet,
+  Repository,
+  Repositories,
+  Ref
+} from './types/redux-orm'
