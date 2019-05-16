@@ -1,8 +1,10 @@
 version: 2
 jobs:
   build:
+    environment:
+      CC_TEST_REPORTER_ID: 53ba7a3bbab51fb8f0b128434497d90362fff7c807a4dabc5eabd436a295e0ca
     docker:
-      - image: node:12.2.0-alpine
+      - image: circleci/node:latest
 
 
     working_directory: ~/project
@@ -14,14 +16,25 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+
+      - run:
           name: "Install dependencies"
           command: |
-            - yarn
+            yarn
+
       - run:
           name: "Execute tests"
           command: |
-            yarn test
+            ./cc-test-reporter before-build
+            yarn test -- --ci --collectCoverage
+            ./cc-test-reporter after-build --coverage-input-type lcov --exit-code $?
       - store_test_results:
           path: reports
       - store_artifacts:
           path: reports
+      - store_artifacts:
+          path: coverage
