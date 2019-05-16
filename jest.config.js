@@ -35,8 +35,6 @@ module.exports = {
   reporters: [
     'default',
     'dts-jest/reporter',
-    ["jest-junit", {
-      output:"./reports/junit-test-results.xml"
-    }]
+    "jest-junit"
   ]
 }

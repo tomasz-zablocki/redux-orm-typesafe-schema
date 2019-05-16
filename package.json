@@ -13,6 +13,7 @@
     "tsc": "tsc -p ./tsconfig.build.json",
     "tsc:watch": "tsc -p . --noEmit -w",
     "test": "jest --config jest.config.js --no-cache",
+    "test:ci": "jest --config jest.config.js --collectCoverage --ci --runInBand --reporters=default --reporters=jest-junit",
     "test:watch": "jest --config jest.config.js --watch",
     "test:coverage": "jest --config jest.config.js --coverage"
   },
