@@ -11,7 +11,7 @@
   "private": true,
   "scripts": {
     "build": "yarn tsc",
-    "tsc": "tsc -p .",
+    "tsc": "tsc -p ./tsconfig-build.json",
     "tsc:watch": "tsc -p . --noEmit -w",
     "test": "jest --config jest.config.js --no-cache",
     "test:watch": "jest --config jest.config.js --watch",

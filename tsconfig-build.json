@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig-base.json",
+  "exclude": [
+    "src/spec/*.ts",
+    "src/**/*.snap.ts",
+    "src/**/*.typespec.ts",
+    "src/**/*.spec.ts"
+  ]
+}
