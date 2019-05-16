@@ -2,8 +2,9 @@ node_modules/
 jest.config.js
 package.json
 tsconfig.json
-tsconfig-base.json
-tsconfig-build.json
+tsconfig.build.json
+reports/
 README.md
+.circleci/
 lib/
 LICENSE

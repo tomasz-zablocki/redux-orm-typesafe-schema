@@ -1,0 +1,27 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: node:12.2.0-alpine
+
+
+    working_directory: ~/project
+    branches:
+      only:
+        - develop
+        - master
+
+    steps:
+      - checkout
+      - run:
+          name: "Install dependencies"
+          command: |
+            - yarn
+      - run:
+          name: "Execute tests"
+          command: |
+            yarn test
+      - store_test_results:
+          path: reports
+      - store_artifacts:
+          path: reports

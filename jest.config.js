@@ -21,6 +21,9 @@ module.exports = {
   },
   preset: 'ts-jest',
   globals: {
+    'ts-jest': {
+      tsConfig: './tsconfig.json'
+    },
     window: {},
     _dts_jest_: {
       compiler_options: './tsconfig.json',
@@ -31,6 +34,9 @@ module.exports = {
   },
   reporters: [
     'default',
-    'dts-jest/reporter'
+    'dts-jest/reporter',
+    ["jest-junit", {
+      output:"./reports/junit-test-results.xml"
+    }]
   ]
 }
