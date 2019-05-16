@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: node:12.2.0-alpine
+      - image: circleci/node:latest
 
 
     working_directory: ~/project
@@ -16,12 +16,14 @@ jobs:
       - run:
           name: "Install dependencies"
           command: |
-            - yarn
+            yarn
       - run:
           name: "Execute tests"
           command: |
-            yarn test
+            yarn test -- --ci --collectCoverage
       - store_test_results:
           path: reports
       - store_artifacts:
           path: reports
+      - store_artifacts:
+          path: coverage
