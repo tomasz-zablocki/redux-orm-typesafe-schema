@@ -7,20 +7,16 @@ import {
   MutableQuerySet,
   QuerySet,
   Ref,
-  Repositories,
   Repository,
+  Session,
   TypedModel
 } from './mapped'
 import { Source, Vod } from '@spec/schema.fixture'
 import { testType } from '@spec/utils'
 import { Unionize } from 'utility-types'
 
-// @dts-jest:group redux-orm mapped types
-it('Entity mapped types', () => {
-  // @dts-jest:pass:snap Ref<Vod> entries
-  testType<Unionize<Ref<Vod>>>()
-  // @dts-jest:pass:snap Ref<Source> entries
-  testType<Unionize<Ref<Source>>>()
+// @dts-jest:group ModelRelationField
+it('ModelRelationField', () => {
   // @dts-jest:pass:snap
   testType<ModelRelationField<Vod, 'sources'>>()
   // @dts-jest:pass:snap
@@ -29,4 +25,10 @@ it('Entity mapped types', () => {
   testType<ModelRelationField<Vod, 'contents'>>()
   // @dts-jest:pass:snap
   testType<ModelRelationField<Source, 'vod'>>()
+})
+
+// @dts-jest:group Ref
+it('Ref', () => {
+  // @dts-jest:pass:snap Ref<Vod>
+  testType<Unionize<Ref<Vod>>>()
 })

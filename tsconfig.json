@@ -31,8 +31,11 @@
     ],
     "baseUrl": ".",
     "paths": {
+      "*": [
+        "types/*"
+      ],
       "@spec/*": [
-        "./src/spec/*"
+        "src/spec/*"
       ]
     },
     "rootDir": "src"

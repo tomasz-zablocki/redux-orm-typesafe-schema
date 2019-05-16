@@ -1,23 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`EntityKeys Attributes<Vod> (type) should match snapshot 1`] = `"\\"id\\" | \\"title\\" | \\"links\\""`;
+exports[`EntityKeys -> Attribute<Vod> (type) should match snapshot 1`] = `"\\"id\\" | \\"title\\" | \\"links\\""`;
 
-exports[`EntityKeys ManyToMany<Content, Vod> (type) should match snapshot 1`] = `"\\"vods\\""`;
+exports[`EntityKeys -> ManyToMany<Content, Vod> (type) should match snapshot 1`] = `"\\"vods\\""`;
 
-exports[`EntityKeys ManyToMany<Vod, Content> (type) should match snapshot 1`] = `"\\"contents\\""`;
+exports[`EntityKeys -> ManyToMany<Vod, Content> (type) should match snapshot 1`] = `"\\"contents\\""`;
 
-exports[`EntityKeys ManyToOne<Source, Vod> (type) should match snapshot 1`] = `"\\"vod\\""`;
+exports[`EntityKeys -> ManyToOne<Source, Vod> (type) should match snapshot 1`] = `"\\"vod\\""`;
 
-exports[`EntityKeys OneToMany<Vod, Source> (type) should match snapshot 1`] = `"\\"sources\\""`;
+exports[`EntityKeys -> OneToMany<Vod, Source> (type) should match snapshot 1`] = `"\\"sources\\""`;
 
-exports[`EntityKeys OneToOne<Vod, VodId> (type) should match snapshot 1`] = `"\\"vodId\\""`;
+exports[`EntityKeys -> OneToOne<Vod, VodId> (type) should match snapshot 1`] = `"\\"vodId\\""`;
 
-exports[`EntityKeys OneToOne<VodId, Vod> (type) should match snapshot 1`] = `"\\"vod\\""`;
+exports[`EntityKeys -> OneToOne<VodId, Vod> (type) should match snapshot 1`] = `"\\"vod\\""`;
 
-exports[`EntityKeys Relations<Vod, ManyToMany> (type) should match snapshot 1`] = `"\\"contents\\""`;
+exports[`EntityKeys -> Relation<Vod ,OneToOne> (type) should match snapshot 1`] = `"\\"vodId\\""`;
 
-exports[`EntityKeys Relations<Vod, ManyToOne> (type) should match snapshot 1`] = `"never"`;
+exports[`EntityKeys -> Relation<Vod, *> (type) should match snapshot 1`] = `"\\"sources\\" | \\"vodId\\" | \\"contents\\""`;
 
-exports[`EntityKeys Relations<Vod, OneToMany> (type) should match snapshot 1`] = `"\\"sources\\""`;
+exports[`EntityKeys -> Relation<Vod, ManyToMany> (type) should match snapshot 1`] = `"\\"contents\\""`;
 
-exports[`EntityKeys Relations<Vod,OneToOne> (type) should match snapshot 1`] = `"\\"vodId\\""`;
+exports[`EntityKeys -> Relation<Vod, ManyToOne> (type) should match snapshot 1`] = `"never"`;
+
+exports[`EntityKeys -> Relation<Vod, OneToMany> (type) should match snapshot 1`] = `"\\"sources\\""`;

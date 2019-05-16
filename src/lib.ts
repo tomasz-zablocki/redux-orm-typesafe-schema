@@ -1,26 +1,37 @@
+import { Entity, EntitySchema, Field } from './types/schema'
 import {
+  createOrmSelector,
+  createReducer,
   Orm,
   OrmFields,
   OrmModelClass,
   OrmModelFields,
+  OrmSelector,
   OrmSession,
-  Repositories,
+  OrmState,
   Repository,
+  Session,
   TypedModel
 } from './types/redux-orm'
-import { Entity, EntitySchema, Field } from './types/schema'
 import { Class } from 'utility-types'
 
-export { wireSchema }
+export {
+  register,
+  createSelector,
+  createReducer,
+  Repository,
+  Session,
+  TypedModel
+}
 
 type OrmSchema<TEntitySchema extends EntitySchema> = {
   [K in keyof TEntitySchema]: any extends OrmModelClass ? OrmModelClass : never
 }
 
-function wireSchema<TEntitySchema extends EntitySchema>(
+function register<TEntitySchema extends EntitySchema>(
   orm: Orm,
   entitySchema: TEntitySchema
-): Repositories<TEntitySchema> {
+): Session<TEntitySchema> {
   let ormSchema = {} as OrmSchema<TEntitySchema>
 
   for (let k in entitySchema) {
@@ -39,7 +50,12 @@ function wireSchema<TEntitySchema extends EntitySchema>(
 }
 
 function isField(value: [string, any]): value is [string, Field] {
-  return typeof value[1] === 'object' && 'fieldType' in value[1]
+  return (
+    typeof value[1] === 'object' &&
+    'fieldType' in value[1] &&
+    'virtual' in value[1] &&
+    !value[1]['virtual']
+  )
 }
 
 function createOrmDescriptor(field: Field) {
@@ -78,6 +94,7 @@ function createModelClass<E extends Entity<E>>(entity: E): OrmModelClass {
     .forEach(([key, field]) => (fields[key] = createOrmDescriptor(field)))
 
   typedModel.fields = fields
+
   typedModel.reducer = (
     action: any,
     modelClass: OrmModelClass,
@@ -102,6 +119,13 @@ function modelRepository<E extends Entity<E>>(
 function sessionRepositories<E extends EntitySchema>(
   entitySchema: EntitySchema,
   session: OrmSession
-): Repositories<E> {
-  return (session as any) as Repositories<E>
+): Session<E> {
+  return (session as any) as Session<E>
+}
+
+function createSelector<E extends EntitySchema, Result>(
+  orm: Orm,
+  ormSelector: OrmSelector<E, Result>
+): (state: OrmState) => Result {
+  return createOrmSelector<OrmState, Result>(orm, ormSelector as any)
 }

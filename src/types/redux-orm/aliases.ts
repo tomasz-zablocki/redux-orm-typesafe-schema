@@ -1,5 +1,7 @@
 import {
   attr,
+  createReducer,
+  createSelector,
   fk,
   many,
   Model,
@@ -17,7 +19,9 @@ export {
   OrmModelClass,
   ORMCommonState as OrmState,
   Model as OrmModel,
-  OrmSession
+  OrmSession,
+  createSelector as createOrmSelector,
+  createReducer
 }
 
 const OrmFields = {

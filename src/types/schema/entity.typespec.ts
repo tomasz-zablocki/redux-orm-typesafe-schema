@@ -23,36 +23,39 @@ import {
   OrmState
 } from '../redux-orm/aliases'
 // noinspection ES6UnusedImports
-import { Content, schema, Source, Vod, VodId } from '@spec/schema.fixture'
+import { Content, Source, Vod, VodContent, VodId } from '@spec/schema.fixture'
 import { testType } from '@spec/utils'
+// noinspection ES6UnusedImports
 import { Entity } from './entity'
 
-// @dts-jest:group Types
-describe('Entity class spec', () => {
-  it('Entity ', () => {
+// @dts-jest:group Entity class ->
+describe('Entity class ->', () => {
+  it('Vod ->', () => {
     // @dts-jest:pass:snap
     testType<Vod>()
-    // @dts-jest:pass:snap
-    testType<Entity<Vod>>()
-    // @dts-jest:pass:snap
-    testType<Class<Vod>>()
 
-    const vodClass = new Vod().entityClass()
     // @dts-jest:pass:snap
-    testType<typeof vodClass>()
+    testType<ReturnType<Vod['entityClass']>>()
+
     // @dts-jest:pass:snap
-    testType<Entity<Vod>>()
+    testType<Vod['id']>()
+
+    // @dts-jest:pass:snap
+    testType<Vod['title']>()
+
+    // @dts-jest:pass:snap
+    testType<Vod['links']>()
+
+    // @dts-jest:pass:snap
+    testType<Vod['vodId']>()
 
     // @dts-jest:pass:snap
     testType<Vod['sources']>()
-    // @dts-jest:pass:snap
-    testType<Vod['title']>()
-    // @dts-jest:pass:snap
-    testType<Vod['links']>()
-    // @dts-jest:pass:snap
-    testType<ReturnType<Required<Vod['links']>['supplier']>>()
 
     // @dts-jest:pass:snap
-    testType<Vod['links']>()
+    testType<Vod['contents']>()
+
+    // @dts-jest:pass:snap
+    testType<ReturnType<Required<Vod['links']>['supplier']>>()
   })
 })

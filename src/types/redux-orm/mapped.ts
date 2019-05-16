@@ -1,11 +1,11 @@
 import {
   Class,
-  DeepRequired,
   OptionalKeys,
   PickByValue,
   RequiredKeys,
   SetIntersection
 } from 'utility-types'
+// noinspection ES6UnusedImports
 import {
   AttributeField,
   Entity,
@@ -16,9 +16,10 @@ import {
   RelationField,
   RelationType
 } from '../schema'
-import { OrmModel } from './aliases'
+import { OrmModel, OrmSession } from './aliases'
 
 export {
+  OrmSelector,
   Ref,
   ModelAttributeFields,
   ModelRelationField,
@@ -27,68 +28,56 @@ export {
   QuerySet,
   MutableQuerySet,
   Repository,
-  Repositories,
+  Session,
   TypedModel
 }
 
-type ModelAttributeFields<E extends Entity<E>> = {
-  [K in EntityKeys.Attributes<E>]: E[K] extends AttributeField<E, infer R>
-    ? R
-    : never
-}
+type ModelAttributeFields<
+  E extends Entity<E>,
+  T = Pick<E, EntityKeys.Attribute<E>>
+> = { [K in keyof T]: T[K] extends AttributeField<E, infer R> ? R : T[K] }
 
 type ModelRelationField<
   E extends Entity<E>,
-  K extends EntityKeys.Relations<E, RelationType>
-> = E[K] extends RelationField<infer RKind, E, infer To, infer K>
+  K extends EntityKeys.Relation<E, RelationType>
+> = Required<E>[K] extends RelationField<infer RKind, E, infer To, infer K>
   ? RKind extends 'OneToOne' | 'ManyToOne'
     ? Model<To>
     : RKind extends 'OneToMany'
     ? QuerySet<To>
-    : RKind extends 'ManyToMany'
-    ? MutableQuerySet<To>
-    : never
+    : MutableQuerySet<To>
   : never
 
 type ModelRelationFields<E extends Entity<E>> = {
-  [K in EntityKeys.Relations<E, RelationType>]: ModelRelationField<E, K>
+  [K in EntityKeys.Relation<E, RelationType>]: ModelRelationField<E, K>
 }
 
 /**
  * @internal
  */
+type RefFieldTypes =
+  | { fieldType: 'ManyToOne' }
+  | { fieldType: 'OneToOne' }
+  | { fieldType: 'Attribute' }
+
 type RequiredRef<E extends Entity<E>> = {
   [K in SetIntersection<
     RequiredKeys<E>,
-    keyof PickByValue<
-      E,
-      { fieldType: 'ManyToOne' } | { fieldType: 'Attribute' }
-    >
-  >]-?: E[K] extends AttributeField<any, infer R>
-    ? R
-    : E[K] extends ManyToOneField<E, any, any>
-    ? string
-    : never
+    keyof PickByValue<E, RefFieldTypes>
+  >]: E[K] extends AttributeField<E, infer R> ? R : string | TypedModel<any>
 }
 
-/**
- * @internal
- */
-type OptionalRef<
-  E extends Entity<E>,
-  T = DeepRequired<Pick<E, OptionalKeys<E>>>
-> = {
-  [K in keyof T]+?: T[K] extends AttributeField<any, infer R>
-    ? R
-    : T[K] extends { fieldType: 'ManyToOne' }
-    ? string
-    : never
+type OptionalRef<E extends Entity<E>> = {
+  [K in SetIntersection<
+    OptionalKeys<E>,
+    keyof PickByValue<Required<E>, RefFieldTypes>
+  >]?: Required<E>[K] extends AttributeField<E, infer R> ? R : string
 }
 
 type Ref<E extends Entity<E>> = RequiredRef<E> & OptionalRef<E>
 
 type Model<E extends Entity<E>> = ModelAttributeFields<E> &
-  ModelRelationFields<E> & { ref: Ref<E> }
+  ModelRelationFields<E> & { delete(): void; ref: Ref<E> }
 
 interface QuerySet<E extends Entity<E>> {
   toRefArray(): ReadonlyArray<Ref<E>>
@@ -143,11 +132,16 @@ interface Dao<E extends Entity<E>> {
 
 interface Repository<E extends Entity<E>> extends Dao<E>, QuerySet<E> {}
 
-type Repositories<E extends EntitySchema> = {
+type Session<E extends EntitySchema> = {
   [k in keyof E]: E[k] extends Class<Entity<infer R>> ? Repository<R> : never
-}
+} &
+  OrmSession & {}
 
 class TypedModel<E extends Entity<E>> extends OrmModel<
   ModelAttributeFields<E>,
   ModelRelationFields<E>
 > {}
+
+type OrmSelector<E extends EntitySchema, Result> = (
+  repositories: Session<E>
+) => Result

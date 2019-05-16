@@ -1,23 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Types testType<Class<Vod>>() (type) should match snapshot 1`] = `"Class<Vod>"`;
+exports[`Entity class -> testType<ReturnType<Required<Vod['links']>['supplier']>>() (type) should match snapshot 1`] = `"{ self: string; }"`;
 
-exports[`Types testType<Entity<Vod>>() (type) should match snapshot 1`] = `"Entity<Vod>"`;
+exports[`Entity class -> testType<ReturnType<Vod['entityClass']>>() (type) should match snapshot 1`] = `"Class<Vod>"`;
 
-exports[`Types testType<Entity<Vod>>() (type) should match snapshot 2`] = `"Entity<Vod>"`;
+exports[`Entity class -> testType<Vod>() (type) should match snapshot 1`] = `"Vod"`;
 
-exports[`Types testType<ReturnType<Required<Vod['links']>['supplier']>>() (type) should match snapshot 1`] = `"{ self: string; }"`;
+exports[`Entity class -> testType<Vod['contents']>() (type) should match snapshot 1`] = `"ManyToManyField<Vod, Content, VodContent, any, any>"`;
 
-exports[`Types testType<Vod>() (type) should match snapshot 1`] = `"Vod"`;
+exports[`Entity class -> testType<Vod['id']>() (type) should match snapshot 1`] = `"AttributeField<Vod, string>"`;
 
-exports[`Types testType<Vod['links']>() (type) should match snapshot 1`] = `"AttributeField<Vod, { self: string; }>"`;
+exports[`Entity class -> testType<Vod['links']>() (type) should match snapshot 1`] = `"AttributeField<Vod, { self: string; }>"`;
 
-exports[`Types testType<Vod['links']>() (type) should match snapshot 2`] = `"AttributeField<Vod, { self: string; }>"`;
+exports[`Entity class -> testType<Vod['sources']>() (type) should match snapshot 1`] = `"OneToManyField<Vod, Source, any>"`;
 
-exports[`Types testType<Vod['sources']>() (type) should match snapshot 1`] = `"OneToManyField<Vod, Source, any>"`;
+exports[`Entity class -> testType<Vod['title']>() (type) should match snapshot 1`] = `"AttributeField<Vod, string> | undefined"`;
 
-exports[`Types testType<Vod['title']>() (type) should match snapshot 1`] = `"AttributeField<Vod, string>"`;
-
-exports[`Types testType<typeof vodClass>() (type) should match snapshot 1`] = `"Class<Vod>"`;
-
-exports[`Types testType<typeof vodClass>>() (type) should match snapshot 1`] = `"Class<Vod>"`;
+exports[`Entity class -> testType<Vod['vodId']>() (type) should match snapshot 1`] = `"OneToOneField<Vod, VodId, any> | undefined"`;

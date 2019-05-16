@@ -1,3 +1,2 @@
-typescript-playground
-=====================
-
+redux-orm-typesafe-schema
+=========================

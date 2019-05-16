@@ -75,19 +75,16 @@ namespace EntityKeys {
     From extends Entity<From>,
     To extends Entity<To>,
     TRelationType extends RelationType
-  > = SetDifference<
-    {
-      [K in keyof From]-?: From[K] extends RelationField<
-        TRelationType,
-        From,
-        To,
-        infer R
-      >
-        ? K
-        : never
-    }[keyof From],
-    undefined
-  >
+  > = {
+    [K in keyof From]-?: Required<From>[K] extends RelationField<
+      TRelationType,
+      From,
+      To,
+      infer R
+    >
+      ? K
+      : never
+  }[keyof From]
 
   export type OneToOne<
     From extends Entity<From>,
@@ -109,15 +106,15 @@ namespace EntityKeys {
     To extends Entity<To>
   > = PickRelationKeys<From, To, 'ManyToMany'>
 
-  export type Attributes<E extends Entity<E>> = keyof PickByValue<
-    E,
+  export type Attribute<E extends Entity<E>> = keyof PickByValue<
+    Required<E>,
     AttributeField<E, any>
   >
 
-  export type Relations<
+  export type Relation<
     E extends Entity<E>,
     TRelationType extends RelationType
-  > = keyof PickByValue<E, RelationField<TRelationType, E, any, any>>
+  > = keyof PickByValue<Required<E>, RelationField<TRelationType, E, any, any>>
 }
 
 interface OneToOneField<

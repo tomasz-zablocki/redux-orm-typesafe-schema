@@ -7,6 +7,7 @@ module.exports = {
     'json'
   ],
   rootDir: '.',
+  coverageDirectory: '<rootDir>/coverage',
   testMatch: [
     '<rootDir>/src/**/*.+spec.ts',
     '<rootDir>/src/**/*.+typespec.ts'
@@ -24,7 +25,6 @@ module.exports = {
     _dts_jest_: {
       compiler_options: './tsconfig.json',
       enclosing_declaration: true,
-      test_value: true,
       test_type: true,
       transpile: true
     }

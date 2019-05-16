@@ -22,6 +22,7 @@ declare module 'redux-orm' {
   > &
     Fields &
     VirtualFields
+
   export type ModelProps = any
 
   export interface DB {
@@ -256,24 +257,23 @@ declare module 'redux-orm' {
     action: any
   ) => any
 
-  export function createReducer<State extends ORMCommonState = ORMCommonState>(
+  export function createReducer<
+    State extends ORMCommonState = ORMCommonState,
+    ActionType = any
+  >(
     orm: ORM<State>,
     updater?: Updater<State>
-  ): (state: State, action: any) => State
+  ): (state: State, action: ActionType) => State
 
-  export type ORMSelector<
-    State extends ORMCommonState,
-    S = {},
-    Result = any
-  > = (session: Session<State>, ...args: any[]) => Result
+  export type ORMSelector<Result = any, S = {}> = (
+    session: S,
+    ...args: any[]
+  ) => Result
 
   export function createSelector<
     State extends ORMCommonState = ORMCommonState,
-    S = {}
-  >(
-    orm: ORM<State>,
-    ...args: Array<ORMSelector<State, S>>
-  ): (state: State) => any
+    Result = any
+  >(orm: ORM<State>, selector: ORMSelector<Result>): (state: State) => Result
 
   class Field {}
   class Attribute extends Field {}

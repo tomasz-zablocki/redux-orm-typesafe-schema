@@ -1,12 +1,12 @@
 import { Class } from 'utility-types'
-import { ActionType } from 'typesafe-actions'
 import {
   AttributeField,
   EntityBuilders,
   Serializable,
   Supplier
 } from './fields'
-import { Repositories, Repository } from '../redux-orm'
+import { Repository, Session } from '../redux-orm'
+import { AnyAction } from 'redux'
 import OneToOneBuilder = EntityBuilders.OneToOneBuilder
 import ManyToManyBuilder = EntityBuilders.ManyToManyBuilder
 import ManyToOneBuilder = EntityBuilders.ManyToOneBuilder
@@ -27,21 +27,16 @@ export {
 } from './fields'
 
 abstract class Entity<E extends Entity<E>> {
-  readonly _entityClass: Class<E>
   abstract readonly modelName: string
 
-  constructor() {
-    this._entityClass = this.constructor as Class<E>
+  entityClass(): Class<E> {
+    return this.constructor as Class<E>
   }
 
-  entityClass() {
-    return this._entityClass
-  }
-
-  reduce<TActionType extends ActionType<any>>(
-    action: TActionType,
+  reduce(
+    action: AnyAction,
     repository: Repository<E>,
-    repositories?: Repositories<any>
+    repositories?: Session<any>
   ): void {}
 
   attribute<ValueType extends Serializable>(
@@ -49,7 +44,7 @@ abstract class Entity<E extends Entity<E>> {
   ): AttributeField<E, ValueType> {
     return {
       fieldType: 'Attribute',
-      from: this._entityClass,
+      from: this.entityClass(),
       virtual: false,
       supplier
     }
@@ -60,14 +55,14 @@ abstract class Entity<E extends Entity<E>> {
       ref: reverseField => ({
         fieldType: 'OneToOne',
         virtual: false,
-        from: this._entityClass,
+        from: this.entityClass(),
         to,
         reverseField
       }),
       virtualRef: reverseField => ({
         fieldType: 'OneToOne',
         virtual: true,
-        from: this._entityClass,
+        from: this.entityClass(),
         to,
         reverseField
       })
@@ -78,7 +73,7 @@ abstract class Entity<E extends Entity<E>> {
     ref: reverseField => ({
       fieldType: 'OneToMany',
       virtual: true,
-      from: this._entityClass,
+      from: this.entityClass(),
       to,
       reverseField
     })
@@ -88,7 +83,7 @@ abstract class Entity<E extends Entity<E>> {
     const build = (options?: {}) => ({
       fieldType: 'ManyToOne' as const,
       virtual: false,
-      from: this._entityClass,
+      from: this.entityClass(),
       to,
       ...options
     })
@@ -104,7 +99,7 @@ abstract class Entity<E extends Entity<E>> {
       virtualRef: (reverseField, throughReverseField) => ({
         fieldType: 'ManyToMany',
         virtual: true,
-        from: this._entityClass,
+        from: this.entityClass(),
         to,
         through,
         reverseField,
@@ -113,7 +108,7 @@ abstract class Entity<E extends Entity<E>> {
       ref: (reverseField, throughReverseField) => ({
         fieldType: 'ManyToMany',
         virtual: false,
-        from: this._entityClass,
+        from: this.entityClass(),
         to,
         through,
         reverseField,
