@@ -8,7 +8,7 @@
   "main": "lib/index",
   "types": "lib/index",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "scripts": {
     "build": "yarn tsc",
     "tsc": "tsc -p ./tsconfig-build.json",
