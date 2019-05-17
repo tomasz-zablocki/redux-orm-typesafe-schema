@@ -60,7 +60,7 @@ function register<TEntitySchema extends EntitySchema>(
 }
 
 function createModelClass<E extends Entity<E>>(
-  createdFields: RelationField[],
+  installedFields: RelationField[],
   entity: E
 ): OrmModelClass {
   const typedModel = class extends TypedModel<E> {
@@ -69,34 +69,9 @@ function createModelClass<E extends Entity<E>>(
 
   let fields: OrmModelFields = {}
 
-  const isReverseField = (
-    field: RelationField,
-    otherField: RelationField,
-    expectedRelationType: RelationType
-  ) =>
-    field.from === otherField.to &&
-    field.to === otherField.from &&
-    otherField.fieldType === expectedRelationType
-
-  const reverseFieldCreated = (field: Field) => {
-    switch (field.fieldType) {
-      case 'OneToMany':
-        return true
-      case 'ManyToOne':
-        return false
-      case 'OneToOne':
-        return createdFields.find(createdField =>
-          isReverseField(field, createdField, 'OneToOne')
-        )
-      case 'ManyToMany':
-        return createdFields.find(createdField =>
-          isReverseField(field, createdField, 'ManyToMany')
-        )
-    }
-  }
   Object.entries(entity)
     .filter(isField)
-    .filter(([, field]) => !reverseFieldCreated(field))
+    .filter(([, field]) => !reverseFieldCreated(installedFields, field))
     .forEach(([key, field]) => (fields[key] = createOrmDescriptor(field)))
 
   typedModel.fields = fields
@@ -121,21 +96,22 @@ function createModelClass<E extends Entity<E>>(
   function createOrmDescriptor(field: Field) {
     const { attr, oneToOne, fk, many } = OrmFields
 
+    if (field.fieldType !== 'Attribute') {
+      installedFields.push(field)
+    }
+
     switch (field.fieldType) {
       case 'Attribute':
         return attr({ getDefault: field.supplier })
       case 'ManyToOne':
-        createdFields.push(field)
         return fk(new field.to().modelName, field.reverseField)
       case 'ManyToMany':
-        createdFields.push(field)
         return many({
           to: new field.to().modelName,
           relatedName: field.reverseField,
           through: new field.through().modelName
         })
       default:
-        createdFields.push(field)
         return oneToOne(new field.to().modelName, field.reverseField)
     }
   }
@@ -160,4 +136,33 @@ function createSelector<E extends EntitySchema, Result>(
   ormSelector: OrmSelector<E, Result>
 ): (state: OrmState) => Result {
   return createOrmSelector<OrmState, Result>(orm, ormSelector as any)
+}
+
+const isReverseField = (
+  field: RelationField,
+  otherField: RelationField,
+  expectedRelationType: RelationType
+) =>
+  field.from === otherField.to &&
+  field.to === otherField.from &&
+  otherField.fieldType === expectedRelationType
+
+const reverseFieldCreated = (
+  installedFields: RelationField[],
+  field: Field
+) => {
+  switch (field.fieldType) {
+    case 'OneToMany':
+      return true
+    case 'ManyToOne':
+      return false
+    case 'OneToOne':
+      return installedFields.find(installedField =>
+        isReverseField(field, installedField, 'OneToOne')
+      )
+    case 'ManyToMany':
+      return installedFields.find(installedField =>
+        isReverseField(field, installedField, 'ManyToMany')
+      )
+  }
 }
