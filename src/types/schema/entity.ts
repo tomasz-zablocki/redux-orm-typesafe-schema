@@ -18,9 +18,6 @@ export {
   RelationType,
   RelationField,
   AttributeField,
-  OneToOneField,
-  OneToManyField,
-  ManyToOneField,
   ManyToManyField,
   EntityKeys,
   EntityBuilders
@@ -80,17 +77,16 @@ abstract class Entity<E extends Entity<E>> {
   })
 
   manyToOne: ManyToOneBuilder<E> = to => {
-    const build = (options?: {}) => ({
+    const build = (options: { virtual: boolean; reverseField?: any }) => ({
       fieldType: 'ManyToOne' as const,
-      virtual: false,
       from: this.entityClass(),
       to,
       ...options
     })
 
     return {
-      ref: reverseField => build({ reverseField }),
-      noRef: build
+      ref: reverseField => build({ reverseField, virtual: false }),
+      noRef: () => build({ virtual: false })
     }
   }
 

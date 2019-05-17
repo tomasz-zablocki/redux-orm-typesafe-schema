@@ -1,4 +1,4 @@
-import { Book, Genre, Person } from '@spec/schema.fixture'
+import { Book, ISBN, Person } from '@spec/schema.fixture'
 import { testType } from '@spec/utils'
 import { EntityKeys, RelationType } from './fields'
 
@@ -23,13 +23,13 @@ describe('fields', () => {
     // @dts-jest:pass:snap Relation<Book, ManyToMany>
     testType<EntityKeys.Relation<Book, 'ManyToMany'>>()
 
-    // @dts-jest:pass:snap OneToOne<Book, Genre>
-    testType<EntityKeys.OneToOne<Book, Genre>>()
+    // @dts-jest:pass:snap OneToOne<Book, ISBN>
+    testType<EntityKeys.RelationKeys<Book, ISBN, 'OneToOne'>>()
 
-    // @dts-jest:pass:snap OneToMany<Book, Person>
-    testType<EntityKeys.OneToMany<Book, Person>>()
+    // @dts-jest:pass:snap ManyToMany<Book, Person>
+    testType<EntityKeys.RelationKeys<Book, Person, 'ManyToMany'>>()
 
-    // @dts-jest:pass:snap ManyToOne<Person, Book>
-    testType<EntityKeys.ManyToOne<Person, Book>>()
+    // @dts-jest:pass:snap ManyToMany<Person, Book>
+    testType<EntityKeys.RelationKeys<Person, Book, 'ManyToMany'>>()
   })
 })

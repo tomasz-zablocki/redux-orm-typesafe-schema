@@ -7,7 +7,7 @@ type BookPayload = {
   isbn: string
   title: string
   year?: number
-  authors: string[]
+  authors?: string[]
   genre: string
   links: {
     description?: string
@@ -31,6 +31,9 @@ export const insertBook = createStandardAction('INSERT_BOOK').map(
 export const updateBook = createStandardAction('UPDATE_BOOK').map(
   (book: UpdatePayload<BookPayload>) => ({ payload: book })
 )
+export const updateBookAuthors = createStandardAction(
+  'UPDATE_BOOK_AUTHORS'
+).map((payload: { bookId: string; authors: string[] }) => ({ payload }))
 
 export const insertGenre = createStandardAction('INSERT_GENRE').map(
   (genre: GenrePayload) => ({ payload: genre })

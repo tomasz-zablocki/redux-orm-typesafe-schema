@@ -2,11 +2,11 @@
 
 exports[`EntityKeys -> Attribute<Book> (type) should match snapshot 1`] = `"\\"id\\" | \\"title\\" | \\"year\\" | \\"links\\""`;
 
-exports[`EntityKeys -> ManyToOne<Person, Book> (type) should match snapshot 1`] = `"never"`;
+exports[`EntityKeys -> ManyToMany<Book, Person> (type) should match snapshot 1`] = `"\\"authors\\""`;
 
-exports[`EntityKeys -> OneToMany<Book, Person> (type) should match snapshot 1`] = `"never"`;
+exports[`EntityKeys -> ManyToMany<Person, Book> (type) should match snapshot 1`] = `"\\"books\\""`;
 
-exports[`EntityKeys -> OneToOne<Book, Genre> (type) should match snapshot 1`] = `"never"`;
+exports[`EntityKeys -> OneToOne<Book, ISBN> (type) should match snapshot 1`] = `"\\"isbn\\""`;
 
 exports[`EntityKeys -> Relation<Book, *> (type) should match snapshot 1`] = `"\\"isbn\\" | \\"genre\\" | \\"authors\\""`;
 

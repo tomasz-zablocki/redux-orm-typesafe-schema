@@ -12,7 +12,6 @@ import {
   Entity,
   EntityKeys,
   EntitySchema,
-  ManyToOneField,
   Primitive,
   RelationField,
   RelationType

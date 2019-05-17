@@ -4,7 +4,7 @@ exports[`Entity class -> testType<Book>() (type) should match snapshot 1`] = `"B
 
 exports[`Entity class -> testType<Book['authors']>() (type) should match snapshot 1`] = `"ManyToManyField<Book, import(\\"src/spec/schema.fixture\\").Person, import(\\"src/spec/schema.fixture\\").Authorship, any, any>"`;
 
-exports[`Entity class -> testType<Book['genre']>() (type) should match snapshot 1`] = `"ManyToOneField<Book, import(\\"src/spec/schema.fixture\\").Genre, any>"`;
+exports[`Entity class -> testType<Book['genre']>() (type) should match snapshot 1`] = `"RelationField<\\"ManyToOne\\", Book, import(\\"src/spec/schema.fixture\\").Genre, any>"`;
 
 exports[`Entity class -> testType<Book['id']>() (type) should match snapshot 1`] = `"AttributeField<Book, string>"`;
 

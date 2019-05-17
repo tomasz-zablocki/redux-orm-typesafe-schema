@@ -30,6 +30,19 @@ class Book extends Entity<Book> {
       case getType(actions.updateBook):
         repository.upsert(action.payload)
         break
+      case getType(actions.updateBookAuthors):
+        const { bookId, authors } = action.payload
+        const book = repository.withId(bookId)
+        if (book) {
+          const currentAuthors = book.authors
+            .toRefArray()
+            .map(authorRef => authorRef.id)
+
+          authors.forEach(authorId => {
+            if (!currentAuthors.includes(authorId)) book.authors.add(authorId)
+          })
+        }
+        break
       default:
         break
     }
@@ -105,8 +118,8 @@ class Person extends Entity<Person> {
 }
 
 class Authorship extends Entity<Authorship> {
-  id = this.attribute<string>()
   modelName = 'Authorship' as const
+  id = this.attribute<string>()
   book = this.manyToOne(Book).noRef()
   author = this.manyToOne(Person).noRef()
 }

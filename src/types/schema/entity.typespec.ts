@@ -8,9 +8,6 @@ import {
   Field,
   FieldType,
   ManyToManyField,
-  ManyToOneField,
-  OneToManyField,
-  OneToOneField,
   RelationField,
   RelationType
 } from './fields'
