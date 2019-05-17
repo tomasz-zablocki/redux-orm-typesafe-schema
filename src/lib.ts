@@ -63,60 +63,60 @@ function createModelClass<E extends Entity<E>>(
   installedFields: RelationField[],
   entity: E
 ): OrmModelClass {
-  const typedModel = class extends TypedModel<E> {
-    static modelName = entity.modelName
-  } as OrmModelClass
+  const typedModel = class extends TypedModel<E> {} as OrmModelClass
 
   let fields: OrmModelFields = {}
 
   Object.entries(entity)
     .filter(isField)
     .filter(([, field]) => !reverseFieldCreated(installedFields, field))
-    .forEach(([key, field]) => (fields[key] = createOrmDescriptor(field)))
+    .forEach(
+      ([key, field]) =>
+        (fields[key] = createOrmDescriptor(installedFields, field))
+    )
 
+  typedModel.modelName = entity.modelName
   typedModel.fields = fields
+  typedModel.reducer = bindReducer(entity)
 
-  typedModel.reducer = (
-    action: any,
-    modelClass: OrmModelClass,
-    session: OrmSession
-  ) =>
+  return typedModel
+}
+
+function bindReducer<E extends Entity<E>>(entity: E) {
+  return (action: any, modelClass: OrmModelClass, session: OrmSession) =>
     entity.reduce(
       action,
       modelRepository(entity.entityClass(), modelClass),
       session as any
     )
-
-  return typedModel
-
-  function isField(value: [string, any]): value is [string, Field] {
-    return typeof value[1] === 'object' && 'fieldType' in value[1]
-  }
-
-  function createOrmDescriptor(field: Field) {
-    const { attr, oneToOne, fk, many } = OrmFields
-
-    if (field.fieldType !== 'Attribute') {
-      installedFields.push(field)
-    }
-
-    switch (field.fieldType) {
-      case 'Attribute':
-        return attr({ getDefault: field.supplier })
-      case 'ManyToOne':
-        return fk(new field.to().modelName, field.reverseField)
-      case 'ManyToMany':
-        return many({
-          to: new field.to().modelName,
-          relatedName: field.reverseField,
-          through: new field.through().modelName
-        })
-      default:
-        return oneToOne(new field.to().modelName, field.reverseField)
-    }
-  }
 }
 
+function isField(value: [string, any]): value is [string, Field] {
+  return typeof value[1] === 'object' && 'fieldType' in value[1]
+}
+
+function createOrmDescriptor(installedFields: RelationField[], field: Field) {
+  const { attr, oneToOne, fk, many } = OrmFields
+
+  if (field.fieldType !== 'Attribute') {
+    installedFields.push(field)
+  }
+
+  switch (field.fieldType) {
+    case 'Attribute':
+      return attr({ getDefault: field.supplier })
+    case 'ManyToOne':
+      return fk(new field.to().modelName, field.reverseField)
+    case 'ManyToMany':
+      return many({
+        to: new field.to().modelName,
+        relatedName: field.reverseField,
+        through: new field.through().modelName
+      })
+    default:
+      return oneToOne(new field.to().modelName, field.reverseField)
+  }
+}
 function modelRepository<E extends Entity<E>>(
   entityClass: Class<E>,
   modelClass: OrmModelClass
