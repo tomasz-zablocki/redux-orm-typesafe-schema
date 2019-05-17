@@ -5,6 +5,13 @@
     "name": "Tomasz Zabłocki",
     "email": "tomasz.zablocki@gmail.com"
   },
+  "keywords": [
+    "redux",
+    "redux-orm",
+    "typescript",
+    "typesafe",
+    "static-typing"
+  ],
   "main": "lib/index",
   "types": "lib/index",
   "license": "MIT",
