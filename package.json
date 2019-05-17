@@ -1,6 +1,6 @@
 {
   "name": "redux-orm-typesafe-schema",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": {
     "name": "Tomasz Zabłocki",
     "email": "tomasz.zablocki@gmail.com"
@@ -24,7 +24,7 @@
     "test:watch": "jest --config jest.config.js --watch",
     "test:coverage": "jest --config jest.config.js --collectCoverage",
     "preversion": "yarn test",
-    "postversion": "git push --tags && yarn publish . --tag $npm_package_version && git push && echo \"released version $npm_package_version!\""
+    "postversion": "git push --tags && yarn publish . && git push"
   },
   "repository": {
     "type": "git",
