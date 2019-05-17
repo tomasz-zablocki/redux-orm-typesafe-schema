@@ -1,23 +1,47 @@
 import { createStandardAction } from 'typesafe-actions'
-import { SourceType } from '@spec/schema.fixture'
+import { GenreName } from '@spec/schema.fixture'
+import { UpdatePayload } from '../index'
 
-type Links = { self: string }
+type BookPayload = {
+  id: string
+  isbn: string
+  title: string
+  year?: number
+  authors: string[]
+  genre: string
+  links: {
+    description?: string
+    cover?: string
+  }
+}
 
-type VodPayload = { id: string; title?: string; vodId?: string; links: Links }
-type SourcePayload = { id: string; type: SourceType; vod: string }
+type PersonPayload = {
+  id: string
+  firstName: string
+  lastName: string
+  books?: string[]
+}
 
-export const insertVod = createStandardAction('INSERT_VOD').map(
-  (vod: VodPayload) => ({ payload: vod })
+type GenrePayload = { id: string; name: GenreName }
+
+export const insertBook = createStandardAction('INSERT_BOOK').map(
+  (book: BookPayload) => ({ payload: book })
 )
 
-export const insertSource = createStandardAction('INSERT_SOURCE').map(
-  (source: SourcePayload) => ({ payload: source })
+export const updateBook = createStandardAction('UPDATE_BOOK').map(
+  (book: UpdatePayload<BookPayload>) => ({ payload: book })
 )
 
-export const deleteSource = createStandardAction('DELETE_SOURCE').map(
-  (sourceId: string) => ({ payload: sourceId })
+export const insertGenre = createStandardAction('INSERT_GENRE').map(
+  (genre: GenrePayload) => ({ payload: genre })
 )
 
-export const updateVod = createStandardAction('UPDATE_VOD').map(
-  (vod: Partial<VodPayload>) => ({ payload: vod })
+export const updatePerson = createStandardAction('UPDATE_PERSON').map(
+  (person: UpdatePayload<PersonPayload>) => ({
+    payload: person
+  })
+)
+
+export const insertPerson = createStandardAction('INSERT_PERSON').map(
+  (person: PersonPayload) => ({ payload: person })
 )

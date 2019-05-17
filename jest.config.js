@@ -16,6 +16,9 @@ module.exports = {
     '.typespec.ts': 'dts-jest/transform',
     '.spec.ts': 'ts-jest'
   },
+  coveragePathIgnorePatterns:
+    ['/node_modules/', '/spec/']
+  ,
   moduleNameMapper: {
     '@spec/(.*)': '<rootDir>/src/spec/$1'
   },
@@ -34,7 +37,6 @@ module.exports = {
   },
   reporters: [
     'default',
-    'dts-jest/reporter',
-    "jest-junit"
+    'dts-jest/reporter'
   ]
 }

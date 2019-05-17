@@ -11,7 +11,8 @@ import {
   OrmState,
   Repository,
   Session,
-  TypedModel
+  TypedModel,
+  UpdatePayload
 } from './types/redux-orm'
 import { Class } from 'utility-types'
 
@@ -20,6 +21,7 @@ export {
   createSelector,
   createReducer,
   Repository,
+  UpdatePayload,
   Session,
   TypedModel
 }
@@ -64,8 +66,6 @@ function createOrmDescriptor(field: Field) {
   switch (field.fieldType) {
     case 'Attribute':
       return attr({ getDefault: field.supplier })
-    case 'OneToOne':
-      return oneToOne(new field.to().modelName, field.reverseField)
     case 'ManyToOne':
       return fk(new field.to().modelName, field.reverseField)
     case 'ManyToMany':
@@ -75,9 +75,7 @@ function createOrmDescriptor(field: Field) {
         through: new field.through().modelName
       })
     default:
-      throw Error(
-        `undefined redux-orm descriptor for field: ${JSON.stringify(field)}`
-      )
+      return oneToOne(new field.to().modelName, field.reverseField)
   }
 }
 

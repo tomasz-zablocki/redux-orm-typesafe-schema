@@ -1,6 +1,7 @@
 import {
   Class,
   OptionalKeys,
+  Overwrite,
   PickByValue,
   RequiredKeys,
   SetIntersection
@@ -29,7 +30,8 @@ export {
   MutableQuerySet,
   Repository,
   Session,
-  TypedModel
+  TypedModel,
+  UpdatePayload
 }
 
 type ModelAttributeFields<
@@ -145,3 +147,5 @@ class TypedModel<E extends Entity<E>> extends OrmModel<
 type OrmSelector<E extends EntitySchema, Result> = (
   repositories: Session<E>
 ) => Result
+
+type UpdatePayload<E extends object> = Overwrite<Partial<E>, { id: string }>

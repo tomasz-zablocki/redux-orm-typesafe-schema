@@ -1,188 +1,216 @@
-import { Content, Source, Vod, VodContent, VodId } from '@spec/schema.fixture'
 import { createReducer, createSelector, register } from './lib'
 import { Orm } from './types/redux-orm'
 import * as actions from '@spec/action.fixture'
+import { Authorship, Book, Genre, Person, ISBN } from '@spec/schema.fixture'
 import { combineReducers } from 'redux'
 import { configureStore } from '@spec/utils'
 
 const registerSchema = () =>
   register(new Orm(), {
-    Vod,
-    Source,
-    VodId,
-    Content,
-    VodContent
+    Book,
+    Person,
+    Genre,
+    Authorship,
+    ISBN
   })
 
 describe('Repositories', () => {
-  describe('Vod repository', () => {
+  describe('Book repository', () => {
     it('create with required fields only', () => {
       //given
-      const { Vod } = registerSchema()
+      const { Book } = registerSchema()
 
-      Vod.create({
-        links: { self: 'http://api/vods/vod-1.html' },
-        id: 'vod-1'
+      Book.create({
+        isbn: '0-306-40615-2.',
+        genre: 'genre-1',
+        links: { description: 'http://api/Books/Book-1.html' },
+        id: 'Book-1',
+        title: 'Gone With The Wind'
       })
 
       //when
-      const vod = Vod.withId('vod-1')
+      const book = Book.withId('Book-1')
 
       //then
-      expect(vod).toBeDefined()
-      expect(vod!!.links.self).toEqual('http://api/vods/vod-1.html')
+      expect(book).toBeDefined()
+      expect(book!!.links.description).toEqual('http://api/Books/Book-1.html')
     })
 
     it('create with optional attribute fields', () => {
       //given
-      const { Vod } = registerSchema()
+      const { Book } = registerSchema()
 
-      Vod.create({
-        links: { self: 'http://api/vods/vod-1.html' },
-        id: 'vod-1',
-        title: 'title-1'
+      Book.create({
+        isbn: '0-306-40615-2.',
+        links: { description: 'http://api/Books/Book-1.html' },
+        id: 'book-1',
+        title: 'title-1',
+        year: 1944,
+        genre: 'genre-1'
       })
 
       //when
-      const vod = Vod.withId('vod-1')
+      const book = Book.withId('book-1')
 
       //then
-      expect(vod).toBeDefined()
-      expect(vod!!.title).toBeDefined()
-      expect(vod!!.title).toEqual('title-1')
+      expect(book).toBeDefined()
+      expect(book!!.title).toBeDefined()
+      expect(book!!.title).toEqual('title-1')
     })
 
     it('create with optional one-to-one relation fields', () => {
       //given
-      const { Vod, VodId } = registerSchema()
+      const { Book, Genre, ISBN } = registerSchema()
 
-      VodId.create({
-        id: 'root-id'
+      ISBN.create({
+        id: '0-306-40615-2.'
       })
 
-      Vod.create({
-        links: { self: 'http://api/vods/vod-1.html' },
-        id: 'vod-1',
-        vodId: 'root-id'
+      Genre.create({
+        id: 'genre-1',
+        name: 'drama'
+      })
+
+      Book.create({
+        isbn: '0-306-40615-2.',
+        links: { description: 'http://api/Books/Book-1.html' },
+        genre: 'genre-1',
+        title: 'Gone with the wind',
+        id: 'book-1'
       })
 
       //when
-      const vod = Vod.withId('vod-1')
+      const book = Book.withId('book-1')
 
       //then
-      expect(vod).toBeDefined()
-      expect(vod!!.vodId).toBeDefined()
-      expect(vod!!.vodId.vod.id).toEqual('vod-1')
+      expect(book).toBeDefined()
+      expect(book!!.genre).toBeDefined()
+      expect(book!!.genre.books.toRefArray()).toHaveLength(1)
     })
 
     it('create many-to-many relations using models', () => {
       //given
-      const { Vod, Content, VodContent } = registerSchema()
+      const { Book, Authorship, Person } = registerSchema()
 
       //when
-      Vod.create({
-        links: { self: 'http://api/vods/vod-1.html' },
-        id: 'vod-1',
-        vodId: 'root-id'
+      Book.create({
+        isbn: '0-306-40615-2.',
+        links: { description: 'http://api/Books/Book-1.html' },
+        genre: 'genre-1',
+        title: 'Gone with the wind',
+        id: 'Book-1',
+        year: 1944
       })
-      Content.create({ id: 'content-1', type: 'MOVIE' })
-      Content.create({ id: 'content-2', type: 'PREVIEW' })
+      Person.create({ id: 'Person-1', firstName: 'John', lastName: 'Smith' })
+      Person.create({ id: 'Person-2', firstName: 'Jane', lastName: 'Smith' })
 
-      const vod = Vod.withId('vod-1')
+      const book = Book.withId('Book-1')
 
-      if (!vod) throw 'vod missing'
+      if (!book) throw 'Book missing'
 
-      Content.all()
+      Person.all()
         .toModelArray()
-        .forEach(content => vod.contents.add(content))
+        .forEach(person => book.authors.add(person))
 
-      const vodContents = VodContent.all()
+      const authorships = Authorship.all()
 
       //then
-      expect(vodContents).toBeDefined()
-      expect(vodContents.toModelArray()).toHaveLength(2)
+      expect(authorships).toBeDefined()
+      expect(authorships.toModelArray()).toHaveLength(2)
     })
 
     it('create many-to-many relations using id', () => {
       //given
-      const { Vod, Content, VodContent } = registerSchema()
+      const { Book, Authorship, Person } = registerSchema()
 
       //when
-      Vod.create({
-        links: { self: 'http://api/vods/vod-1.html' },
-        id: 'vod-1',
-        vodId: 'root-id'
+      Book.create({
+        isbn: '0-306-40615-2.',
+        links: { description: 'http://api/Books/Book-1.html' },
+        genre: 'genre-1',
+        title: 'Gone with the wind',
+        id: 'Book-1',
+        year: 1944
       })
-      Content.create({ id: 'content-1', type: 'MOVIE' })
-      Content.create({ id: 'content-2', type: 'PREVIEW' })
+      Person.create({ id: 'Person-1', firstName: 'John', lastName: 'Smith' })
+      Person.create({ id: 'Person-2', firstName: 'Jane', lastName: 'Smith' })
 
-      const vod = Vod.withId('vod-1')
+      const book = Book.withId('Book-1')
 
-      if (!vod) throw 'vod missing'
+      if (!book) throw 'Book missing'
 
-      vod.contents.add('content-1')
-      vod.contents.add('content-2')
+      Person.all()
+        .toRefArray()
+        .forEach(person => book.authors.add(person.id))
 
-      const vodContents = VodContent.all()
+      const authorships = Authorship.all()
 
       //then
-      expect(vodContents).toBeDefined()
-      expect(vodContents.toModelArray()).toHaveLength(2)
-    })
-  })
-})
-
-describe('Selectors', () => {
-  it('should select expected data', () => {
-    //given
-    const orm = new Orm()
-    const session = register(orm, {
-      Vod,
-      Source,
-      VodId,
-      Content,
-      VodContent
+      expect(authorships).toBeDefined()
+      expect(authorships.toModelArray()).toHaveLength(2)
     })
 
-    const { insertVod, updateVod, insertSource, deleteSource } = actions
-    const reducers = {
-      db: createReducer(orm)
-    }
-    const rootReducer = combineReducers<any, any>(reducers)
-    const store = configureStore(rootReducer)
-    type Session = typeof session
-    const selector = createSelector(
-      orm,
-      (session: Session) => {
-        return session.Vod.all()
-          .toModelArray()
-          .map(vodModel => ({
-            ...vodModel.ref,
-            sources: vodModel.sources.toRefArray()
-          }))
-      }
-    )
+    describe('Selectors', () => {
+      it('should select expected data', () => {
+        //given
+        const orm = new Orm()
+        const session = register(orm, {
+          Book,
+          Person,
+          Authorship,
+          Genre,
+          ISBN
+        })
 
-    //when
-    store.dispatch(insertVod({ id: 'vod-1', links: { self: 'v ://vod-1' } }))
-    store.dispatch(updateVod({ title: 'title-1' }))
-    store.dispatch(
-      insertSource({ id: 'source-1', type: 'MOVIE', vod: 'vod-1' })
-    )
-    store.dispatch(
-      insertSource({ id: 'source-2', type: 'MOVIE', vod: 'vod-1' })
-    )
-    store.dispatch(
-      insertSource({ id: 'source-3', type: 'MOVIE', vod: 'vod-1' })
-    )
-    store.dispatch(deleteSource('source-1'))
+        const { insertBook, updateBook, insertPerson, insertGenre } = actions
+        const reducers = {
+          db: createReducer(orm)
+        }
+        const rootReducer = combineReducers<any, any>(reducers)
+        const store = configureStore(rootReducer)
+        type Session = typeof session
+        const selector = createSelector(
+          orm,
+          (session: Session) => {
+            return session.Book.all()
+              .toModelArray()
+              .map(bookModel => ({
+                ...bookModel.ref,
+                Persons: bookModel.authors.toRefArray()
+              }))
+          }
+        )
 
-    const selectResult = selector(store.getState().db)
+        //when
+        store.dispatch(insertGenre({ id: 'genre-1', name: 'drama' }))
+        store.dispatch(
+          insertPerson({ id: 'person-1', firstName: 'John', lastName: 'Doe' })
+        )
+        store.dispatch(
+          insertPerson({ id: 'person-2', firstName: 'John', lastName: 'Wayne' })
+        )
+        store.dispatch(
+          insertBook({
+            isbn: '0-306-40615-2',
+            id: 'book-1',
+            links: { description: 'url://book-1' },
+            authors: ['person-1'],
+            genre: 'genre-1',
+            title: 'Gone with the wind'
+          })
+        )
+        store.dispatch(
+          updateBook({ id: 'book-1', authors: ['person-1', 'person-2'] })
+        )
 
-    //then
-    expect(selectResult).toBeDefined()
-    expect(selectResult).toHaveLength(1)
-    expect(selectResult[0].links.self).toEqual('v ://vod-1')
-    expect(selectResult[0].sources).toHaveLength(2)
+        const selectResult = selector(store.getState().db)
+
+        //then
+        expect(selectResult).toBeDefined()
+        expect(selectResult).toHaveLength(1)
+        expect(selectResult[0].links.description).toEqual('url://book-1')
+        expect(selectResult[0].Persons).toHaveLength(2)
+      })
+    })
   })
 })

@@ -3,30 +3,100 @@ import { ActionType, getType } from 'typesafe-actions'
 import { Repository } from '../types/redux-orm'
 import * as actions from './action.fixture'
 
-export { Vod, VodContent, VodId, Content, Source }
-
-type Links = { self: string }
+export { Genre, GenreName, Book, Authorship, Person, ISBN }
 
 type RootAction = ActionType<typeof actions>
 
-class Vod extends Entity<Vod> {
-  modelName = 'Vod' as const
+class Book extends Entity<Book> {
+  modelName = 'Book' as const
   id = this.attribute<string>()
-  title? = this.attribute<string>()
-  links = this.attribute<Links>()
-  sources = this.oneToMany(Source).ref('vod')
-  vodId? = this.oneToOne(VodId).ref('vod')
-  contents = this.manyToMany(Content)
-    .through(VodContent)
-    .ref('vods', 'vod')
+  title = this.attribute<string>()
+  year? = this.attribute<number>()
+  links = this.attribute<{
+    description?: string
+    cover?: string
+  }>()
+  isbn? = this.oneToOne(ISBN).ref('book')
+  genre = this.manyToOne(Genre).ref('books')
+  authors = this.manyToMany(Person)
+    .through(Authorship)
+    .ref('books', 'book')
 
-  reduce(action: RootAction, repository: Repository<Vod>) {
+  reduce(action: RootAction, repository: Repository<Book>) {
     switch (action.type) {
-      case getType(actions.insertVod):
+      case getType(actions.insertBook):
         repository.create(action.payload)
         break
-      case getType(actions.updateVod):
+      case getType(actions.updateBook):
+        repository.upsert(action.payload)
+        break
+      default:
+        break
+    }
+  }
+}
+
+class ISBN extends Entity<ISBN> {
+  modelName = 'ISBN' as const
+  id = this.attribute<string>()
+  book? = this.oneToOne(Book).virtualRef('isbn')
+
+  reduce(action: RootAction, repository: Repository<ISBN>) {
+    switch (action.type) {
+      case getType(actions.insertBook):
+        repository.create({ id: action.payload.isbn })
+        break
+      default:
+        break
+    }
+  }
+}
+
+type GenreName = 'action' | 'drama' | 'thriller'
+
+class Genre extends Entity<Genre> {
+  modelName = 'Genre' as const
+  id = this.attribute<string>()
+  name = this.attribute<GenreName>()
+  books = this.oneToMany(Book).ref('genre')
+
+  reduce(action: RootAction, repository: Repository<Genre>) {
+    switch (action.type) {
+      case getType(actions.insertGenre):
+        repository.create(action.payload)
+        break
+      default:
+        break
+    }
+  }
+}
+
+class Person extends Entity<Person> {
+  modelName = 'Person' as const
+  id = this.attribute<string>()
+  firstName = this.attribute<string>()
+  lastName = this.attribute<string>()
+  books = this.manyToMany(Book)
+    .through(Authorship)
+    .virtualRef('authors', 'author')
+
+  reduce(action: RootAction, repository: Repository<Person>) {
+    switch (action.type) {
+      case getType(actions.insertPerson):
+        repository.create(action.payload)
+        if (action.payload.books) {
+          action.payload.books.forEach(bookId =>
+            repository.withId(action.payload.id)!!.books.add(bookId)
+          )
+        }
+        break
+      case getType(actions.updatePerson):
         repository.update(action.payload)
+        if (action.payload.books) {
+          action.payload.books.forEach(bookId =>
+            repository.withId(action.payload.id)!!.books.add(bookId)
+          )
+        }
         break
       default:
         break
@@ -34,49 +104,9 @@ class Vod extends Entity<Vod> {
   }
 }
 
-export type SourceType = 'MOVIE' | 'PREVIEW' | 'POSTER'
-
-class Source extends Entity<Source> {
+class Authorship extends Entity<Authorship> {
   id = this.attribute<string>()
-  modelName = 'Source' as const
-  type = this.attribute<SourceType>()
-  vod = this.manyToOne(Vod).ref('sources')
-
-  reduce(action: RootAction, repository: Repository<Source>) {
-    switch (action.type) {
-      case getType(actions.insertSource):
-        repository.create(action.payload)
-        break
-      case getType(actions.deleteSource):
-        if (repository.hasId(action.payload))
-          repository.withId(action.payload)!!.delete()
-        break
-      default:
-        break
-    }
-  }
-}
-
-class VodId extends Entity<VodId> {
-  id = this.attribute<string>()
-  modelName = 'VodId' as const
-  vod? = this.oneToOne(Vod).virtualRef('vodId')
-}
-
-export type ContentType = 'MOVIE' | 'PREVIEW' | 'POSTER'
-
-class Content extends Entity<Content> {
-  id = this.attribute<string>()
-  modelName = 'Content' as const
-  type = this.attribute<ContentType>()
-  vods = this.manyToMany(Vod)
-    .through(VodContent)
-    .virtualRef('contents', 'content')
-}
-
-class VodContent extends Entity<VodContent> {
-  id = this.attribute<string>()
-  modelName = 'VodContent' as const
-  vod = this.manyToOne(Vod).noRef()
-  content = this.manyToOne(Content).noRef()
+  modelName = 'Authorship' as const
+  book = this.manyToOne(Book).noRef()
+  author = this.manyToOne(Person).noRef()
 }

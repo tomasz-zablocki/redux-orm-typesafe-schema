@@ -23,39 +23,33 @@ import {
   OrmState
 } from '../redux-orm/aliases'
 // noinspection ES6UnusedImports
-import { Content, Source, Vod, VodContent, VodId } from '@spec/schema.fixture'
 import { testType } from '@spec/utils'
 // noinspection ES6UnusedImports
 import { Entity } from './entity'
+import { Book } from '@spec/schema.fixture'
 
 // @dts-jest:group Entity class ->
 describe('Entity class ->', () => {
-  it('Vod ->', () => {
+  it('Book ->', () => {
     // @dts-jest:pass:snap
-    testType<Vod>()
+    testType<Book>()
 
     // @dts-jest:pass:snap
-    testType<ReturnType<Vod['entityClass']>>()
+    testType<ReturnType<Book['entityClass']>>()
 
     // @dts-jest:pass:snap
-    testType<Vod['id']>()
+    testType<Book['id']>()
 
     // @dts-jest:pass:snap
-    testType<Vod['title']>()
+    testType<Book['title']>()
 
     // @dts-jest:pass:snap
-    testType<Vod['links']>()
+    testType<Book['authors']>()
 
     // @dts-jest:pass:snap
-    testType<Vod['vodId']>()
+    testType<Book['genre']>()
 
     // @dts-jest:pass:snap
-    testType<Vod['sources']>()
-
-    // @dts-jest:pass:snap
-    testType<Vod['contents']>()
-
-    // @dts-jest:pass:snap
-    testType<ReturnType<Required<Vod['links']>['supplier']>>()
+    testType<Book['links']>()
   })
 })

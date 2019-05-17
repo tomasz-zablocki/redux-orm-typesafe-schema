@@ -11,24 +11,24 @@ import {
   Session,
   TypedModel
 } from './mapped'
-import { Source, Vod } from '@spec/schema.fixture'
+import { Authorship, Book, Genre } from '@spec/schema.fixture'
 import { testType } from '@spec/utils'
 import { Unionize } from 'utility-types'
 
 // @dts-jest:group ModelRelationField
 it('ModelRelationField', () => {
   // @dts-jest:pass:snap
-  testType<ModelRelationField<Vod, 'sources'>>()
+  testType<ModelRelationField<Book, 'authors'>>()
   // @dts-jest:pass:snap
-  testType<ModelRelationField<Vod, 'vodId'>>()
+  testType<ModelRelationField<Book, 'genre'>>()
   // @dts-jest:pass:snap
-  testType<ModelRelationField<Vod, 'contents'>>()
+  testType<ModelRelationField<Authorship, 'author'>>()
   // @dts-jest:pass:snap
-  testType<ModelRelationField<Source, 'vod'>>()
+  testType<ModelRelationField<Genre, 'books'>>()
 })
 
 // @dts-jest:group Ref
 it('Ref', () => {
-  // @dts-jest:pass:snap Ref<Vod>
-  testType<Unionize<Ref<Vod>>>()
+  // @dts-jest:pass:snap Ref<Book>
+  testType<Unionize<Ref<Book>>>()
 })

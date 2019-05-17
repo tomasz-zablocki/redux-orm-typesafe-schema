@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ModelRelationField testType<ModelRelationField<Source, 'vod'>>() (type) should match snapshot 1`] = `"Model<Vod>"`;
+exports[`ModelRelationField testType<ModelRelationField<Authorship, 'author'>>() (type) should match snapshot 1`] = `"Model<import(\\"src/spec/schema.fixture\\").Person>"`;
 
-exports[`ModelRelationField testType<ModelRelationField<Vod, 'contents'>>() (type) should match snapshot 1`] = `"MutableQuerySet<import(\\"src/spec/schema.fixture\\").Content>"`;
+exports[`ModelRelationField testType<ModelRelationField<Book, 'authors'>>() (type) should match snapshot 1`] = `"MutableQuerySet<import(\\"src/spec/schema.fixture\\").Person>"`;
 
-exports[`ModelRelationField testType<ModelRelationField<Vod, 'sources'>>() (type) should match snapshot 1`] = `"QuerySet<Source>"`;
+exports[`ModelRelationField testType<ModelRelationField<Book, 'genre'>>() (type) should match snapshot 1`] = `"Model<Genre>"`;
 
-exports[`ModelRelationField testType<ModelRelationField<Vod, 'vodId'>>() (type) should match snapshot 1`] = `"Model<import(\\"src/spec/schema.fixture\\").VodId>"`;
+exports[`ModelRelationField testType<ModelRelationField<Genre, 'books'>>() (type) should match snapshot 1`] = `"QuerySet<Book>"`;
 
-exports[`Ref Ref<Vod> (type) should match snapshot 1`] = `"{ id: string; } | { links: { self: string; }; } | { title?: string | undefined; } | { vodId?: string | undefined; } | undefined"`;
+exports[`Ref Ref<Book> (type) should match snapshot 1`] = `"{ id: string; } | { title: string; } | { links: { description?: string | undefined; cover?: string | undefined; }; } | { genre: string | TypedModel<any>; } | { year?: number | undefined; } | { isbn?: string | undefined; } | undefined"`;
