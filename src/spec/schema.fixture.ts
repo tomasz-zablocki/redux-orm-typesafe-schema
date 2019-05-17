@@ -1,5 +1,5 @@
 import { Entity } from '../types/schema'
-import { ActionType, getType } from 'typesafe-actions'
+import { ActionType, getType, isActionOf } from 'typesafe-actions'
 import { Repository } from '../types/redux-orm'
 import * as actions from './action.fixture'
 
@@ -52,15 +52,11 @@ class Book extends Entity<Book> {
 class ISBN extends Entity<ISBN> {
   modelName = 'ISBN' as const
   id = this.attribute<string>()
-  book? = this.oneToOne(Book).virtualRef('isbn')
+  book? = this.oneToOne(Book).ref('isbn')
 
   reduce(action: RootAction, repository: Repository<ISBN>) {
-    switch (action.type) {
-      case getType(actions.insertBook):
-        repository.create({ id: action.payload.isbn })
-        break
-      default:
-        break
+    if (isActionOf(actions.insertBook, action)) {
+      repository.create({ id: action.payload.isbn })
     }
   }
 }
@@ -74,12 +70,8 @@ class Genre extends Entity<Genre> {
   books = this.oneToMany(Book).ref('genre')
 
   reduce(action: RootAction, repository: Repository<Genre>) {
-    switch (action.type) {
-      case getType(actions.insertGenre):
-        repository.create(action.payload)
-        break
-      default:
-        break
+    if (isActionOf(actions.insertGenre, action)) {
+      repository.create(action.payload)
     }
   }
 }
@@ -91,7 +83,7 @@ class Person extends Entity<Person> {
   lastName = this.attribute<string>()
   books = this.manyToMany(Book)
     .through(Authorship)
-    .virtualRef('authors', 'author')
+    .ref('authors', 'author')
 
   reduce(action: RootAction, repository: Repository<Person>) {
     switch (action.type) {
@@ -120,6 +112,6 @@ class Person extends Entity<Person> {
 class Authorship extends Entity<Authorship> {
   modelName = 'Authorship' as const
   id = this.attribute<string>()
-  book = this.manyToOne(Book).noRef()
-  author = this.manyToOne(Person).noRef()
+  book = this.manyToOne(Book).ref()
+  author = this.manyToOne(Person).ref()
 }

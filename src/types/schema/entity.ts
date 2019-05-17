@@ -2,15 +2,16 @@ import { Class } from 'utility-types'
 import {
   AttributeField,
   EntityBuilders,
+  EntityKeys,
+  RelationType,
+  ReverseRelation,
   Serializable,
   Supplier
 } from './fields'
 import { Repository, Session } from '../redux-orm'
 import { AnyAction } from 'redux'
-import OneToOneBuilder = EntityBuilders.OneToOneBuilder
+import RelationBuilder = EntityBuilders.RelationBuilder
 import ManyToManyBuilder = EntityBuilders.ManyToManyBuilder
-import ManyToOneBuilder = EntityBuilders.ManyToOneBuilder
-import OneToManyBuilder = EntityBuilders.OneToManyBuilder
 
 export {
   FieldType,
@@ -42,76 +43,37 @@ abstract class Entity<E extends Entity<E>> {
     return {
       fieldType: 'Attribute',
       from: this.entityClass(),
-      virtual: false,
       supplier
     }
   }
 
-  oneToOne: OneToOneBuilder<E> = to => {
-    return {
-      ref: reverseField => ({
-        fieldType: 'OneToOne',
-        virtual: false,
-        from: this.entityClass(),
-        to,
-        reverseField
-      }),
-      virtualRef: reverseField => ({
-        fieldType: 'OneToOne',
-        virtual: true,
-        from: this.entityClass(),
-        to,
-        reverseField
-      })
-    }
-  }
-
-  oneToMany: OneToManyBuilder<E> = to => ({
-    ref: reverseField => ({
-      fieldType: 'OneToMany',
-      virtual: true,
-      from: this.entityClass(),
-      to,
-      reverseField
-    })
+  oneToOne: RelationBuilder<E, 'OneToOne'> = to => ({
+    ref: reverseField => this._ref(to, 'OneToOne', reverseField)
   })
 
-  manyToOne: ManyToOneBuilder<E> = to => {
-    const build = (options: { virtual: boolean; reverseField?: any }) => ({
-      fieldType: 'ManyToOne' as const,
-      from: this.entityClass(),
-      to,
-      ...options
-    })
+  oneToMany: RelationBuilder<E, 'OneToMany'> = to => ({
+    ref: reverseField => this._ref(to, 'OneToMany', reverseField)
+  })
 
-    return {
-      ref: reverseField => build({ reverseField, virtual: false }),
-      noRef: () => build({ virtual: false })
-    }
-  }
+  manyToOne: RelationBuilder<E, 'ManyToOne'> = to => ({
+    ref: reverseField => this._ref(to, 'ManyToOne', reverseField)
+  })
 
   manyToMany: ManyToManyBuilder<E> = to => ({
     through: through => ({
-      virtualRef: (reverseField, throughReverseField) => ({
-        fieldType: 'ManyToMany',
-        virtual: true,
-        from: this.entityClass(),
-        to,
-        through,
-        reverseField,
-        throughReverseField
-      }),
       ref: (reverseField, throughReverseField) => ({
-        fieldType: 'ManyToMany',
-        virtual: false,
-        from: this.entityClass(),
-        to,
+        ...this._ref(to, 'ManyToMany', reverseField),
         through,
-        reverseField,
         throughReverseField
       })
     })
   })
+
+  private _ref = <To extends Entity<To>, TRelation extends RelationType>(
+    to: Class<To>,
+    fieldType: TRelation,
+    reverseField?: EntityKeys.RelationKeys<To, E, ReverseRelation<TRelation>>
+  ) => ({ to, from: this.entityClass(), reverseField, fieldType })
 }
 
 export { Entity }

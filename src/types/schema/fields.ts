@@ -33,14 +33,23 @@ type FieldType =
   | 'ManyToOne'
   | 'ManyToMany'
 
+export type ReverseRelation<
+  TRelation extends RelationType
+> = TRelation extends 'OneToOne'
+  ? 'OneToOne'
+  : TRelation extends 'ManyToMany'
+  ? 'ManyToMany'
+  : TRelation extends 'OneToMany'
+  ? 'ManyToOne'
+  : 'OneToMany' | 'OneToMany'
+
 type Field =
   | AttributeField<any, any>
-  | RelationField<any, any, any, any>
+  | RelationField<'OneToOne' | 'OneToMany' | 'ManyToOne', any, any, any>
   | ManyToManyField<any, any, any, any, any>
 
 interface EntityField<FType extends FieldType, From extends Entity<From>> {
   readonly fieldType: FType
-  readonly virtual: boolean
   readonly from: Class<From>
 }
 
@@ -50,16 +59,15 @@ interface AttributeField<
 > extends EntityField<'Attribute', From> {
   readonly fieldType: 'Attribute'
   readonly supplier?: Supplier<ValueType>
-  readonly virtual: false
 }
 
 type RelationType = SetDifference<FieldType, 'Attribute'>
 
 interface RelationField<
-  TRelationType extends RelationType,
-  From extends Entity<From>,
-  To extends Entity<To>,
-  TReverseField extends keyof To
+  TRelationType extends RelationType = any,
+  From extends Entity<From> = any,
+  To extends Entity<To> = any,
+  TReverseField extends keyof To = any
 > extends EntityField<TRelationType, From> {
   readonly to: Class<To>
   readonly reverseField?: TReverseField
@@ -105,31 +113,18 @@ interface ManyToManyField<
 }
 
 namespace EntityBuilders {
-  export interface OneToOneBuilder<From extends Entity<From>> {
+  export interface RelationBuilder<
+    From extends Entity<From>,
+    TRelation extends RelationType
+  > {
     <To extends Entity<To>>(to: Class<To>): {
       ref(
-        reverseField: EntityKeys.RelationKeys<To, From, 'OneToOne'>
-      ): RelationField<'OneToOne', From, To, any>
-      virtualRef(
-        reverseField: EntityKeys.RelationKeys<To, From, 'OneToOne'>
-      ): RelationField<'OneToOne', From, To, any>
-    }
-  }
-
-  export interface OneToManyBuilder<From extends Entity<From>> {
-    <To extends Entity<To>>(to: Class<To>): {
-      ref(
-        reverseField: EntityKeys.RelationKeys<To, From, 'ManyToOne'>
-      ): RelationField<'OneToMany', From, To, any>
-    }
-  }
-
-  export interface ManyToOneBuilder<From extends Entity<From>> {
-    <To extends Entity<To>>(to: Class<To>): {
-      noRef(): RelationField<'ManyToOne', From, To, any>
-      ref(
-        reverseField: EntityKeys.RelationKeys<To, From, 'OneToMany'>
-      ): RelationField<'ManyToOne', From, To, any>
+        reverseField?: EntityKeys.RelationKeys<
+          To,
+          From,
+          ReverseRelation<TRelation>
+        >
+      ): RelationField<TRelation, From, To>
     }
   }
 
@@ -139,10 +134,6 @@ namespace EntityBuilders {
         through: Class<Through>
       ) => {
         ref(
-          reverseField: EntityKeys.RelationKeys<To, From, 'ManyToMany'>,
-          throughField: EntityKeys.RelationKeys<Through, From, 'ManyToOne'>
-        ): ManyToManyField<From, To, Through, any, any>
-        virtualRef(
           reverseField: EntityKeys.RelationKeys<To, From, 'ManyToMany'>,
           throughField: EntityKeys.RelationKeys<Through, From, 'ManyToOne'>
         ): ManyToManyField<From, To, Through, any, any>
