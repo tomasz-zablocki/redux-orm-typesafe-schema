@@ -78,57 +78,55 @@ type OptionalRef<E extends Entity<E>> = {
 type Ref<E extends Entity<E>> = RequiredRef<E> & OptionalRef<E>
 
 type Model<E extends Entity<E>> = ModelAttributeFields<E> &
-  ModelRelationFields<E> & { delete(): void; ref: Ref<E> }
+  ModelRelationFields<E> & {
+    getId(): string
+    delete(): void
+    equals(otherModel: Model<any>): boolean
+    getModelClass(): Class<TypedModel<E>>
+    update(userMergeObj: Partial<Ref<E>>): void
+    set<K extends keyof Ref<E>>(property: K, value: Ref<E>[K]): void
+    ref: Ref<E>
+  }
 
 interface QuerySet<E extends Entity<E>> {
   toRefArray(): ReadonlyArray<Ref<E>>
-
   toModelArray(): ReadonlyArray<Model<E>>
-
   count(): number
-
   exists(): boolean
-
   at(index: number): Model<E> | undefined
-
   first(): Model<E> | undefined
-
   last(): Model<E> | undefined
-
   all(): QuerySet<E>
-
   filter(lookupObj: Partial<Ref<E>>): QuerySet<E>
-
   exclude(lookupObj: Partial<Ref<E>>): QuerySet<E>
-
   orderBy(
-    iterateeArray: QuerySet.SortIteratee<E>[],
-    orders: QuerySet.SortOrder[]
+    iterateeArray: ReadonlyArray<QuerySet.SortIteratee<E>>,
+    orders?: ReadonlyArray<QuerySet.SortOrder>
   ): QuerySet<E>
-
   update(props: Partial<Ref<E>>): void
-
   delete(): void
 }
 
 namespace QuerySet {
-  export type SortOrder = 'asc' | true | 'desc' | false
+  export type SortOrder = 'asc' | 'desc'
 
   export type SortIteratee<E extends Entity<E>> =
-    | keyof Model<E>
-    | { (model: Model<E>): Primitive }
+    | keyof Ref<E>
+    | { (model: Ref<E>): any }
 }
 
 interface MutableQuerySet<E extends Entity<E>> extends QuerySet<E> {
-  add: (idOrModel: string | Model<E>) => void
-  remove: (idOrModel: string | Model<E>) => void
+  add: (...entitiesToAdd: (Model<E> | string)[]) => void
+  remove: (...entitiesToRemove: (Model<E> | string)[]) => void
+  clear: () => void
 }
 
 interface Dao<E extends Entity<E>> {
   create: (props: Ref<E>) => Model<E>
+  update: (props: Partial<Ref<E>>) => void
   upsert: (props: Partial<Ref<E>>) => Model<E>
   withId: (id: string) => Model<E> | null
-  hasId: (id: string) => boolean
+  idExists: (id: string) => boolean
 }
 
 interface Repository<E extends Entity<E>> extends Dao<E>, QuerySet<E> {}

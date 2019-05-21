@@ -9,8 +9,8 @@ export {
   Repository,
   Session,
   Ref,
-  createReducer,
-  Orm
+  Orm,
+  UpdatePayload
 } from './types/redux-orm'
 
 export * from './lib'

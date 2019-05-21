@@ -11,35 +11,27 @@ import {
   Orm,
   OrmFields,
   OrmModelClass,
-  OrmModelFields,
   OrmSelector,
   OrmSession,
   OrmState,
   Repository,
   Session,
-  TypedModel,
-  UpdatePayload
+  TypedModel
 } from './types/redux-orm'
 import { Class } from 'utility-types'
 
-export {
-  register,
-  createSelector,
-  createReducer,
-  Repository,
-  UpdatePayload,
-  Session,
-  TypedModel
-}
-
-type OrmSchema<TEntitySchema extends EntitySchema> = {
-  [K in keyof TEntitySchema]: any extends OrmModelClass ? OrmModelClass : never
-}
+export { register, createSelector, createReducer }
 
 function register<TEntitySchema extends EntitySchema>(
   orm: Orm,
   entitySchema: TEntitySchema
 ): Session<TEntitySchema> {
+  type OrmSchema<TEntitySchema extends EntitySchema> = {
+    [K in keyof TEntitySchema]: any extends OrmModelClass
+      ? OrmModelClass
+      : never
+  }
+
   let ormSchema = {} as OrmSchema<TEntitySchema>
 
   let createdFields: RelationField[] = []
@@ -59,31 +51,46 @@ function register<TEntitySchema extends EntitySchema>(
   return sessionRepositories(entitySchema, orm.session(orm.getEmptyState()))
 }
 
+function createSelector<E extends EntitySchema, Result>(
+  orm: Orm,
+  ormSelector: OrmSelector<E, Result>
+): (state: OrmState) => Result {
+  return createOrmSelector<OrmState, Result>(orm, ormSelector as any)
+}
+
 function createModelClass<E extends Entity<E>>(
   installedFields: RelationField[],
   entity: E
 ): OrmModelClass {
-  const typedModel = class extends TypedModel<E> {} as OrmModelClass
-
-  let fields: OrmModelFields = {}
-
-  Object.entries(entity)
-    .filter(isField)
-    .filter(([, field]) => !reverseFieldCreated(installedFields, field))
-    .forEach(
-      ([key, field]) =>
-        (fields[key] = createOrmDescriptor(installedFields, field))
-    )
-
-  typedModel.modelName = entity.modelName
-  typedModel.fields = fields
-  typedModel.reducer = bindReducer(entity)
-
-  return typedModel
+  return class extends TypedModel<E> {
+    static modelName = entity.modelName
+    static fields = createFieldDescriptors(installedFields, entity)
+    static reducer = createBoundReducer(entity)
+  } as OrmModelClass
 }
 
-function bindReducer<E extends Entity<E>>(entity: E) {
-  return (action: any, modelClass: OrmModelClass, session: OrmSession) =>
+function createFieldDescriptors<E extends Entity<E>>(
+  installedFields: RelationField[],
+  entity: E
+) {
+  return Object.entries(entity)
+    .filter(isField)
+    .filter(([, field]) => !reverseFieldCreated(installedFields, field))
+    .reduce(
+      (prev, [key, field]) => ({
+        ...prev,
+        [key]: createOrmDescriptor(installedFields, field)
+      }),
+      {}
+    )
+}
+
+interface EntityReducer {
+  (action: any, modelClass: OrmModelClass, session: OrmSession): void
+}
+
+function createBoundReducer<E extends Entity<E>>(entity: E): EntityReducer {
+  return (action, modelClass, session) =>
     entity.reduce(
       action,
       modelRepository(entity.entityClass(), modelClass),
@@ -131,13 +138,6 @@ function sessionRepositories<E extends EntitySchema>(
   return (session as any) as Session<E>
 }
 
-function createSelector<E extends EntitySchema, Result>(
-  orm: Orm,
-  ormSelector: OrmSelector<E, Result>
-): (state: OrmState) => Result {
-  return createOrmSelector<OrmState, Result>(orm, ormSelector as any)
-}
-
 const isReverseField = (
   field: RelationField,
   otherField: RelationField,
@@ -157,12 +157,9 @@ const reverseFieldCreated = (
     case 'ManyToOne':
       return false
     case 'OneToOne':
-      return installedFields.find(installedField =>
-        isReverseField(field, installedField, 'OneToOne')
-      )
     case 'ManyToMany':
-      return installedFields.find(installedField =>
-        isReverseField(field, installedField, 'ManyToMany')
+      return installedFields.some(installedField =>
+        isReverseField(field, installedField, field.fieldType)
       )
   }
 }

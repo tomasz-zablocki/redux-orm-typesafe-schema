@@ -1,9 +1,10 @@
 import { createReducer, createSelector, register } from './lib'
-import { Orm } from './types/redux-orm'
+import { Model, Orm, Repository } from './types/redux-orm'
 import * as actions from '@spec/action.fixture'
-import { Authorship, Book, Genre, Person, ISBN } from '@spec/schema.fixture'
+import { Authorship, Book, Genre, ISBN, Person } from '@spec/schema.fixture'
 import { combineReducers } from 'redux'
 import { configureStore } from '@spec/utils'
+import { Entity } from './types/schema'
 
 const testData = {
   book1: {
@@ -50,6 +51,14 @@ describe('lib', () => {
       ISBN
     })
 
+  const assertModelPresent = <E extends Entity<E>>(
+    model: null | Model<E>
+  ): model is Model<E> => {
+    expect(model).toBeTruthy()
+
+    return !!model
+  }
+
   describe('Repository', () => {
     const { book1, book2, person1, person2 } = testData
 
@@ -70,8 +79,9 @@ describe('lib', () => {
       const book = Book.withId(book1.id)
 
       //then
-      expect(book).toBeDefined()
-      expect(book!!.title).toEqual(book1.title)
+      if (assertModelPresent(book)) {
+        expect(book.title).toEqual(book1.title)
+      }
     })
 
     it('create with optional attribute fields', () => {
@@ -86,9 +96,10 @@ describe('lib', () => {
       const book = Book.withId(book1.id)
 
       //then
-      expect(book).toBeDefined()
-      expect(book!!.year).toBeDefined()
-      expect(book!!.year).toEqual(book1.year)
+      if (assertModelPresent(book)) {
+        expect(book.year).toBeDefined()
+        expect(book.year).toEqual(book1.year)
+      }
     })
 
     it('create with optional one-to-one relation fields', () => {
@@ -107,9 +118,10 @@ describe('lib', () => {
       const book = Book.withId(book1.id)
 
       //then
-      expect(book).toBeDefined()
-      expect(book!!.isbn).toBeDefined()
-      expect(book!!.isbn.book.title).toEqual(book1.title)
+      if (assertModelPresent(book)) {
+        expect(book.isbn).toBeDefined()
+        expect(book.isbn.book.title).toEqual(book1.title)
+      }
     })
 
     it('create many-to-many relations using models', () => {
@@ -121,8 +133,7 @@ describe('lib', () => {
       const author1 = Person.create(person1)
       const author2 = Person.create(person2)
 
-      book.authors.add(author1)
-      book.authors.add(author2)
+      book.authors.add(author1, author2)
 
       //then
       expect(Authorship.all().toRefArray()).toHaveLength(2)
@@ -137,30 +148,34 @@ describe('lib', () => {
       Book.create(book1)
       Book.create(book2)
 
-      Book.all()
-        .toRefArray()
-        .forEach(book => person.books.add(book.id))
+      person.books.add(...Book.all().toModelArray())
 
       //then
       expect(Authorship.all().toModelArray()).toHaveLength(2)
+
+      //when
+      person.books.clear()
+
+      //then
+      expect(Authorship.all().count()).toEqual(0)
     })
   })
 
   describe('Selectors', () => {
+    const testStore = (orm: Orm) => {
+      const reducers = {
+        db: createReducer(orm)
+      }
+      const rootReducer = combineReducers<any, any>(reducers)
+      return configureStore(rootReducer)
+    }
+
     it('should select expected data', () => {
       //given
       const { book1, person1, person2, genre } = testData
       const orm = new Orm()
       const session = registerSchema(orm)
-      const { insertBook, updateBook, insertPerson, insertGenre } = actions
-      const reducers = {
-        db: createReducer(orm)
-      }
-      const rootReducer = combineReducers<any, any>(reducers)
-      const store = configureStore(rootReducer)
-
       type Session = typeof session
-
       const selector = createSelector(
         orm,
         (session: Session) => {
@@ -172,6 +187,8 @@ describe('lib', () => {
             }))
         }
       )
+      const { insertBook, updateBook, insertPerson, insertGenre } = actions
+      const store = testStore(orm)
 
       //when
       store.dispatch(insertGenre(genre))
@@ -194,6 +211,39 @@ describe('lib', () => {
       expect(selectResult[0].authors).toHaveLength(2)
       expect(selectResult[0].authors[0].firstName).toEqual(person1.firstName)
       expect(selectResult[0].authors[1].lastName).toEqual(person2.lastName)
+    })
+
+    it('should select and order expected data', () => {
+      //given
+      const orm = new Orm()
+      const session = registerSchema(orm)
+      type Session = typeof session
+      const selector = createSelector(
+        orm,
+        (session: Session) => {
+          return session.Person.orderBy(
+            [ref => ref.lastName, 'firstName'],
+            ['asc', 'desc']
+          )
+            .toRefArray()
+            .map(ref => ref.id)
+        }
+      )
+      const store = testStore(orm)
+      const { insertPerson } = actions
+      const personRows = [
+        { id: 'personA', firstName: 'A', lastName: 'Z' },
+        { id: 'personB', firstName: 'B', lastName: 'A' },
+        { id: 'personC', firstName: 'C', lastName: 'A' },
+        { id: 'personD', firstName: 'D', lastName: 'Z' }
+      ]
+
+      //when
+      personRows.map(insertPerson).forEach(store.dispatch)
+      const selectResult = selector(store.getState().db)
+
+      //then
+      expect(selectResult).toEqual(['personC', 'personB', 'personD', 'personA'])
     })
   })
 })
