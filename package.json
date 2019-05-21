@@ -1,5 +1,6 @@
 {
   "name": "redux-orm-typesafe-schema",
+  "description": "A small static-typing oriented wrapper around redux-orm written in TypeScript",
   "version": "0.0.9",
   "author": {
     "name": "Tomasz Zabłocki",

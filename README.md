@@ -18,7 +18,13 @@ Features:
 
 ## Install
 
+### npm
+
 `npm install --save redux-orm-typesafe-schema`
+
+### yarn
+
+`yarn add redux-orm-typesafe-schema`
 
 ## Usage
 
