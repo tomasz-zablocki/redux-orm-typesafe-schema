@@ -1,7 +1,7 @@
 {
   "name": "redux-orm-typesafe-schema",
   "description": "A small static-typing oriented wrapper around redux-orm written in TypeScript",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "author": {
     "name": "Tomasz Zabłocki",
     "email": "tomasz.zablocki@gmail.com"
@@ -18,15 +18,17 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "tsc": "tsc -p ./tsconfig.build.json",
-    "tsc:watch": "tsc -p . --noEmit -w",
+    "clean": "rimraf ./coverage && rimraf ./reports && rimraf ./lib",
+    "prebuild": "yarn clean",
+    "build": "tsc -p ./tsconfig.build.json",
+    "build:watch": "tsc -p . --noEmit -w",
     "test": "jest --config jest.config.js --no-cache",
     "test:ci": "jest --config jest.config.js --collectCoverage --ci --runInBand --reporters=default --reporters=jest-junit",
     "test:watch": "jest --config jest.config.js --watch",
     "test:coverage": "jest --config jest.config.js --collectCoverage",
     "preversion": "yarn test",
     "postversion": "git push --tags && yarn publish . && git push",
-    "prepublish": "yarn tsc"
+    "prepublish": "yarn build"
   },
   "repository": {
     "type": "git",
@@ -39,6 +41,7 @@
   },
   "dependencies": {
     "redux-orm": "^0.13.3",
+    "tslib": "^1.9.3",
     "typesafe-actions": "^4.2.1",
     "utility-types": "^3.7.0"
   },
@@ -56,8 +59,8 @@
     "redux": "^4.0.1",
     "redux-devtools-extension": "latest",
     "redux-logger": "latest",
+    "rimraf": "^2.6.3",
     "ts-jest": "^24.0.2",
-    "tslib": "^1.9.3",
     "typedoc": "^0.14.2",
     "typescript": "^3.4.5"
   },
