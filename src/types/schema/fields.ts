@@ -22,7 +22,9 @@ export {
   RelationType,
   RelationField,
   ManyToManyField,
-  EntityKeys
+  EntityKeys,
+  EntityField,
+  ReverseRelation
 }
 
 type FieldType =
@@ -32,7 +34,7 @@ type FieldType =
   | 'ManyToOne'
   | 'ManyToMany'
 
-export type ReverseRelation<
+type ReverseRelation<
   TRelation extends RelationType
 > = TRelation extends 'OneToOne'
   ? 'OneToOne'

@@ -56,9 +56,6 @@ type ModelRelationFields<E extends Entity<E>> = {
   [K in EntityKeys.Relation<E, RelationType>]: ModelRelationField<E, K>
 }
 
-/**
- * @internal
- */
 type RefFieldTypes =
   | { fieldType: 'ManyToOne' }
   | { fieldType: 'OneToOne' }

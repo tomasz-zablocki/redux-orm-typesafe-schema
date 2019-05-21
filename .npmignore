@@ -4,3 +4,6 @@ src/
 *.iml
 reports/
 coverage/
+jest.config.js
+.prettierignore
+.prettierrc.yaml

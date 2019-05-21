@@ -1,8 +1,12 @@
-import { Orm, Repository, Session } from './types/redux-orm'
-
 export { Entity, EntitySchema, EntityBuilders } from './types/schema'
 
 export {
+  RefFieldTypes,
+  RequiredRef,
+  OptionalRef,
+  ModelAttributeFields,
+  ModelRelationField,
+  ModelRelationFields,
   Model,
   QuerySet,
   MutableQuerySet,
