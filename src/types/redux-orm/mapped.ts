@@ -20,6 +20,9 @@ import { OrmModel, OrmSession } from './aliases'
 
 export {
   OrmSelector,
+  RefFieldTypes,
+  RequiredRef,
+  OptionalRef,
   Ref,
   ModelAttributeFields,
   ModelRelationField,

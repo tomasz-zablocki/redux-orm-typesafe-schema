@@ -1,6 +1,6 @@
 import { Orm, Repository, Session } from './types/redux-orm'
 
-export { Entity, EntitySchema } from './types/schema'
+export { Entity, EntitySchema, EntityBuilders } from './types/schema'
 
 export {
   Model,

@@ -22,8 +22,7 @@ export {
   RelationType,
   RelationField,
   ManyToManyField,
-  EntityKeys,
-  EntityBuilders
+  EntityKeys
 }
 
 type FieldType =
@@ -112,7 +111,7 @@ interface ManyToManyField<
   readonly throughReverseField: TThroughReverseField
 }
 
-namespace EntityBuilders {
+export namespace EntityBuilders {
   export interface RelationBuilder<
     From extends Entity<From>,
     TRelation extends RelationType
