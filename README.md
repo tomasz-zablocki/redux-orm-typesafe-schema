@@ -9,7 +9,7 @@
 [![dev-dependencies)](https://img.shields.io/david/dev/tomasz-zablocki/redux-orm-typesafe-schema.svg?color=darkblue&style=flat-square)](https://david-dm.org/tomasz-zablocki/redux-orm-typesafe-schema?type=dev)
 [![license](https://img.shields.io/npm/l/redux-orm-typesafe-schema.svg?color=darkorange&style=flat-square)](https://github.com/tomasz-zablocki/redux-orm-typesafe-schema/blob/develop/LICENSE)
 
-A small typesafe wrapper around redux-orm.
+A small type-safe wrapper around [redux-orm](https://github.com/redux-orm/redux-orm).
 
 Features: 
 
@@ -139,7 +139,7 @@ class Book extends Entity<Book> {
 }
 ```
 
-\#@# 4. Redux integration
+### 4. Redux integration
 
 #### 4.1. Define actions
 
@@ -235,15 +235,12 @@ type Session = typeof session
 
 // session contains all Model classes
 // Model classes are strictly typed according to registered entity definitions 
-const bookWithAuthorsSelector = (session: Session) => {
-                                    return session.Book.all()
+const bookWithAuthorsSelector = (session: Session) => session.Book.all()
                                       .toModelArray()
                                       .map(bookModel => ({
                                         ...bookModel.ref,
                                         authors: bookModel.authors.toRefArray()
                                       }))
-                                  }
-
 // create ORM selector                                 
 const selector = createSelector(
   orm,
