@@ -1,5 +1,4 @@
-redux-orm-typesafe-schema
-=========================
+# redux-orm-typesafe-schema
 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![Maintainability](https://api.codeclimate.com/v1/badges/cec304c8bc8574674c0d/maintainability)](https://codeclimate.com/github/tomasz-zablocki/redux-orm-typesafe-schema/maintainability)
@@ -11,22 +10,23 @@ redux-orm-typesafe-schema
 A small typesafe wrapper around redux-orm.
 
 Features: 
-* typed Models
-* typed static Repositories
-* typed QuerySet  
-* redux-orm Session with inferred Model types
 
-# Install
+- typed Models
+- typed static Repositories
+- typed QuerySet  
+- redux-orm Session with inferred Model types
+
+## Install
 
 `npm install --save redux-orm-typesafe-schema`
 
-# Usage
+## Usage
 
 Follow steps below to define typesafe redux-orm schema. 
 
 Refer to [spec case](src/lib.spec.ts) for complete example.
 
-## 1. Define entities
+### 1. Define entities
 
 Extends `Entity` class to define schema:
 
@@ -39,7 +39,7 @@ class Book extends Entity<Book> {
 }
 ```
 
-## 2. Define fields and relations
+### 2. Define fields and relations
 
 ```typescript
 import {Entity} from 'redux-orm-typesafe-schema'
@@ -85,9 +85,10 @@ class Book extends Entity<Book> {
 }
 ```
 
-## 3. Define reducers 
+### 3. Define reducers
 
-Example uses utilities from `typesafe-actions` module, but any standard redux actions may be used
+Example uses utilities from `typesafe-actions` module.
+Any standard redux actions may be used.
 
 ```typescript
 import {Entity} from 'redux-orm-typesafe-schema'
@@ -130,9 +131,9 @@ class Book extends Entity<Book> {
 }
 ```
 
-## 4. Redux integration 
+\#@# 4. Redux integration
 
-### 4.1. Define actions 
+#### 4.1. Define actions
 
 ```typescript
 import { createStandardAction } from 'typesafe-actions'
@@ -162,7 +163,7 @@ export const updateBook = createStandardAction('UPDATE_BOOK').map(
 )
 ```
 
-### 4.2. Configure store and root orm reducer 
+#### 4.2. Configure store and root orm reducer
 
 ```typescript
 import { Orm, createReducer, register } from 'redux-orm-typesafe-schema'
@@ -198,7 +199,7 @@ const rootReducer = combineReducers<any, any>({
 const store = createStore(rootReducer)
 ```
 
-### 4.3. Typed selectors 
+#### 4.3. Typed selectors
 
 ```typescript
 import { createSelector, register, createReducer, Orm} from 'redux-orm-typesafe-schema'
@@ -231,7 +232,7 @@ const bookWithAuthorsSelector = (session: Session) => {
                                       .toModelArray()
                                       .map(bookModel => ({
                                         ...bookModel.ref,
-                                        Persons: bookModel.authors.toRefArray()
+                                        authors: bookModel.authors.toRefArray()
                                       }))
                                   }
 
