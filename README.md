@@ -1,5 +1,9 @@
 # redux-orm-typesafe-schema
 
+## !!! NO LONGER SUPPORTED - USE LATEST [@types/redux-orm](https://www.npmjs.com/package/@types/redux-orm) DECLARATIONS INSTEAD
+
+
+
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![maintainability](https://api.codeclimate.com/v1/badges/cec304c8bc8574674c0d/maintainability)](https://codeclimate.com/github/tomasz-zablocki/redux-orm-typesafe-schema/maintainability)
 [![test coverage](https://api.codeclimate.com/v1/badges/cec304c8bc8574674c0d/test_coverage)](https://codeclimate.com/github/tomasz-zablocki/redux-orm-typesafe-schema/test_coverage)
